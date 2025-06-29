@@ -1,0 +1,45 @@
+/* css/navbar.css */
+.header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 20px 40px;
+  background: none;
+  z-index: 1000;
+}
+
+.nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+}
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  transition: color 0.3s;
+}
+.nav-links a:hover {
+  color: var(--primary-cyan);
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 2px;
+  background: var(--primary-cyan);
+  transition: width 0.3s;
+}
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* …and the rest of your logo/spin rules… */
