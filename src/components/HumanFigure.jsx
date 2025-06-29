@@ -44,7 +44,7 @@ export default function HumanFigure() {
       autoplay: false,
       defaults: {
         loop: true,
-        ease: 'inOut(1.3)',
+        easing: 'easeInOutSine',
         onLoop(self) { self.refresh() },
       }
     })
@@ -54,7 +54,7 @@ export default function HumanFigure() {
         x: el =>  target.x + el[radius]*cos(el[theta]),
         y: el =>  target.y + el[radius]*sin(el[theta]),
         duration: () => duration + anime.random(-100,100),
-        easing: 'inOut(1.5)',
+        easing: 'easeInOutCubic',
         update: anim => {
           // mutate theta+radius on loop
           if (anim.currentTime === 0) {
