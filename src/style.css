@@ -50,7 +50,7 @@ body {
   border-radius: var(--frame-radius);
   background-color: var(--color-bg-light);
   color: var(--color-text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Audiowide', cursive;
   line-height: 1.6;
   overflow-x: hidden;
 }
