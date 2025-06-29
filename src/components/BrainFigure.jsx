@@ -33,11 +33,16 @@ export default function BrainFigure() {
     new GLTFLoader().load(
       brainUrl,
       (gltf) => {
-        const mesh = gltf.scene.children.find(c => c.isMesh)
-        if (!mesh) {
-          console.error('No mesh found in brain.glb!')
-          return
-        }
+let mesh = null
+gltf.scene.traverse(obj => {
+  if (obj.isMesh && !mesh) mesh = obj
+})
+
+if (!mesh) {
+  console.error('No mesh found in brain.glb!')
+  return
+}
+
 
         // center + scale the raw mesh (we use only its geometry for sampling)
         const box    = new THREE.Box3().setFromObject(mesh)
