@@ -1,33 +1,19 @@
-// src/components/Hero.jsx
-import React, { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
+import React from 'react'
 import HumanFigure from './HumanFigure'
+import '../css/hero.css'
 
-const Hero = () => {
-  const titleRef = useRef(null)
-
-  useEffect(() => {
-    const tl = gsap.timeline()
-    tl.from(titleRef.current, { duration: 1, y: 50, opacity: 0, delay: 0.5 })
-  }, [])
-
+export default function Hero() {
   return (
     <section className="hero">
-      {/* Full-bleed 3D background canvas */}
+      {/* Full-bleed 3D background */}
       <div className="hero-background">
         <HumanFigure />
       </div>
 
-      {/* JARVIS text overlay */}
-      <div className="hero-container">
-        <div className="hero-content">
-          <h1 className="hero-title" ref={titleRef}>
-            JARVIS
-          </h1>
-        </div>
+      {/* Overlayed name */}
+      <div className="hero-overlay">
+        <h1>JARVIS</h1>
       </div>
     </section>
   )
 }
-
-export default Hero
