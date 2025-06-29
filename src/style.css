@@ -27,70 +27,24 @@ html, body {
   height: 100%;
 }
 
-/* src/css/hero.css */
-
-/* ─── Full-screen hero ───────────────────────────────────────────────────── */
-.hero {
-  position: relative;
-  width: 100%;
-- height: 100vh;
-- min-height: calc(100vh - (var(--frame-thickness) * 2));
-- background-color: var(--bg-dark);
-- background: transparent;
-- overflow: visible;
-+ /* we no longer set any background or overflow on .hero */
-+ min-height: calc(100vh - (var(--frame-thickness) * 2));
-}
-
-/* ─── Canvas container: fill the hero ───────────────────────────────────── */
-.hero-canvas {
-  position: absolute;
-  inset: 0;             /* top/right/bottom/left: 0 */
-  z-index: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Stretch the Three.js wrapper */
-.hero-canvas .human-figure-container {
-  width: 100%;
+/* 1) Make sure html fills and is your “frame” */
+html {
   height: 100%;
+  background-color: var(--frame-color);  /* your black */
+  border-radius: var(--frame-radius);    /* round its corners */
+  overflow: hidden;                       /* clip all children */
 }
 
-/* Ensure the WebGL canvas fills its parent */
-.hero-canvas canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
+/* 2) Let body scroll *inside* that frame */
+body {
+  margin: 0;                              /* no extra insets */
+  height: calc(100% - 0px);               /* full height under html */
+  overflow-y: auto;                       /* vertical scroll only */
+  background-color: var(--color-bg-light);
+  color: var(--color-text);
+  font-family: 'Audiowide', cursive;
+  line-height: 1.6;
 }
-
-/* ─── Overlayed “JARVIS” title ───────────────────────────────────────────── */
-.hero-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  margin: 0;
-- color: var(--accent-blue);
-+ color: var(--color-accent);
-  font-size: 15rem;
-  opacity: 0.15;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-- text-shadow: 0 0 20px var(--accent-light);
-+ text-shadow: 0 0 20px var(--color-primary-light);
-  pointer-events: none;
-}
-
-/* ─── Responsive tweak ──────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 3rem;
-  }
-}
-
 
 /* ==========================================================================
    SIMPLE FOUR-SIDED FRAME (no notches)
