@@ -1,5 +1,6 @@
 import React from 'react'
 import '../css/features.css'
+import BrainFigure from './BrainFigure'
 
 const featuresData = [
   {
