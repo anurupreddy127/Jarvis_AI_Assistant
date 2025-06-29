@@ -3,9 +3,7 @@
 /* 1) Fixed, transparent header that turns solid on scroll */
 .header {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   padding: 16px 24px;
   background: none;
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -13,8 +11,8 @@
 }
 
 .header.scrolled {
-  background: rgba(10, 10, 15, 0.95);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  background-color: var(--color-bg-dark);
+  box-shadow: 0 0 20px var(--color-accent);
 }
 
 /* 2) Centered nav container */
@@ -35,8 +33,8 @@
 .brand-text {
   font-size: 24px;
   font-weight: 700;
-  color: var(--primary-cyan);
-  text-shadow: 0 0 8px var(--primary-cyan);
+  color: var(--color-accent);
+  text-shadow: 0 0 8px var(--color-accent);
   letter-spacing: 2px;
 }
 
@@ -52,12 +50,16 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--text-secondary);
+  color: var(--color-text);
   transition: color 0.3s ease;
 }
 
+.header.scrolled .nav-links a {
+  color: var(--color-text-inverse);
+}
+
 .nav-links a:hover {
-  color: var(--primary-cyan);
+  color: var(--color-accent);
 }
 
 /* 5) Underline animation */
@@ -68,7 +70,7 @@
   left: 0;
   width: 0%;
   height: 2px;
-  background: var(--primary-cyan);
+  background: var(--color-accent);
   transition: width 0.3s ease;
 }
 
