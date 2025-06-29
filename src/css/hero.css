@@ -6,7 +6,7 @@
   position: relative;
   width: 100%;
   min-height: calc(100vh - (var(--frame-thickness) * 2));
-  z-index: 1;      /* make sure the section itself sits above the canvas */
+        /* make sure the section itself sits above the canvas */
 }
 
 /* ─── Pin the canvas full‐screen under the frame ──────────────────────────── */
@@ -16,7 +16,7 @@
   left: var(--frame-thickness);
   right: var(--frame-thickness);
   bottom: var(--frame-thickness);
-  z-index: 999;                /* behind everything else in your page */
+  z-index: 100;                /* behind everything else in your page */
   pointer-events: none;      /* let clicks through to buttons/links */
   display: flex;
   justify-content: center;
@@ -37,7 +37,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 100;               /* above text, above canvas */
+  z-index: 101;               /* above text, above canvas */
   margin: 0;
   font-size: 15rem;
   opacity: 0.15;
@@ -51,5 +51,5 @@
 /* ─── Make sure all other sections stack above the canvas, too ─────────── */
 section {
   position: relative;
-  z-index: 1;    /* any subsequent <section> (like #about) will be above the fixed canvas */
+      /* any subsequent <section> (like #about) will be above the fixed canvas */
 }
