@@ -1,5 +1,6 @@
 /* css/style.css */
-/* Reset & box-sizing */
+
+/* 1) RESET & BOX-SIZING */
 *,
 *::before,
 *::after {
@@ -8,20 +9,30 @@
   box-sizing: border-box;
 }
 
-/* Root color variables */
+/* 2) ROOT COLOR VARIABLES */
 :root {
-  --primary-cyan:    #00ffff;
-  --primary-blue:    #0088ff;
-  --dark-bg:         #0a0a0f;
-  --text-primary:    #fff;
-  --text-secondary:  #b0b0b0;
+  /* Backgrounds */
+  --color-bg-dark:   #3C3744;  /* dark charcoal */
+  --color-bg-light:  #FBFFF1;  /* off-white */
+
+  /* Primary / brand blues */
+  --color-primary-dark:  #090C9B;  /* deep royal blue */
+  --color-primary:       #3D52D5;  /* mid-tone blue */
+  --color-primary-light:#B4C5E4;   /* pale blue */
+
+  /* Text */
+  --color-text:           var(--color-bg-dark);
+  --color-text-inverse:   var(--color-bg-light);
+
+  /* Accent (alias for primary) */
+  --color-accent:         var(--color-primary);
 }
 
-/* Base typography */
+/* 3) BASE TYPOGRAPHY & LAYOUT */
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--dark-bg);
-  color: var(--text-primary);
+  background-color: var(--color-bg-light);
+  color: var(--color-text);
   line-height: 1.6;
   overflow-x: hidden;
 }
