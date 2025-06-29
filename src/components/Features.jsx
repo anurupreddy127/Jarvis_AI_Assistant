@@ -18,13 +18,13 @@ const featuresData = [
       'Jarvis parses not just keywords but full intent. Say “scroll down until I see the pricing section,” and it’ll find and jump straight there.',
   },
   {
-    icon: '🤖',
+    icon: '🔍',
     title: 'Natural-Language Search',
     description:
       'Forget exact queries—just speak naturally. “Show me the latest tech reviews” becomes a Google search, all done hands-free.',
   },
   {
-    icon: '🗣️',
+    icon: '💬',
     title: 'Dynamic Voice Responses',
     description:
       'With ElevenLabs’ expressive TTS, Jarvis doesn’t just beep—it speaks back in a clear, human-like voice, confirming actions and reading out results.',
@@ -33,7 +33,7 @@ const featuresData = [
     icon: '✋',
     title: 'Zero-Hands Mode',
     description:
-      'Ideal for accessibility or when you’re multitasking: Jarvis will keep browsing, reading, and interacting without you touching the keyboard or mouse.',
+      'Ideal for accessibility or multitasking: Jarvis keeps browsing, reading, and interacting without you touching keyboard or mouse.',
   },
 ]
 
@@ -45,17 +45,23 @@ export default function Features() {
 
     const cards = containerRef.current.querySelectorAll('.feature-card')
 
-    gsap.to(cards, {
-      // drift each card up/left; increase distance per index
-      x: i => -150 - i * 30,
-      y: i => -150 - i * 30,
-      ease: 'none',
+    // build a timeline:
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
-        start: 'top bottom',
-        end: 'bottom top',
+        start: 'top 80%',    // when top of features hits 80% down viewport
+        end: 'bottom 20%',   // until bottom reaches 20% from top
         scrub: true,
       },
+    })
+
+    // from bottom-right, opacity 0 → to natural position, opacity 1
+    tl.from(cards, {
+      x: 200,              // start 200px to the right
+      y: 200,              // and 200px down
+      autoAlpha: 0,        // invisible
+      ease: 'power1.out',
+      stagger: 0.2,        // each card delays 0.2s after the last
     })
   }, [])
 
