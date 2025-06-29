@@ -74,7 +74,7 @@ model.traverse(child => {
 
     const material = new THREE.PointsMaterial({
       color: 0x3C3744,
-      size: 0.01,
+      size: 0.02,
       sizeAttenuation: true,
     })
 
