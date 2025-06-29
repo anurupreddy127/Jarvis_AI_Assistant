@@ -1,25 +1,14 @@
 /* src/css/features.css */
 
+/* 1) Wrap the full-screen section */
 .features-section {
   position: relative;
-  min-height: calc(100vh - (var(--frame-thickness)*2));
+  min-height: calc(100vh - (var(--frame-thickness) * 2));
   overflow: hidden;
+  background: var(--color-bg-light);
 }
 
-.features-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.features-bg > div, /* BrainFigure wrapper */
-.features-bg canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
+/* 2) Container to center your content */
 .features-container {
   position: relative;
   z-index: 1;
@@ -29,19 +18,76 @@
   text-align: center;
 }
 
+/* 3) Section heading */
+.features-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+/* 4) Intro paragraph */
+.features-container p.intro {
+  font-size: 1.125rem;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* 5) Grid of feature cards */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
+  margin-top: 2rem;
 }
 
+/* 6) Individual card style */
 .feature-card {
   background: var(--color-bg-light);
   padding: 2rem;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* 7) Icon in each card */
 .feature-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-accent);
+}
+
+/* 8) Card title */
+.feature-card h3 {
+  font-size: 1.25rem;
   margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+/* 9) Card description */
+.feature-card p {
+  font-size: 1rem;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+/* 10) Responsive tweaks */
+@media (max-width: 768px) {
+  .features-container {
+    padding: 3rem 1rem;
+  }
+  .features-container h2 {
+    font-size: 2rem;
+  }
+  .features-grid {
+    gap: 1.5rem;
+  }
 }
