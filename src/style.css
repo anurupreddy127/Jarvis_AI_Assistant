@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GLOBAL VARIABLES — palette + frame knobs
+   GLOBAL VARIABLES — palette + frame settings
    ========================================================================== */
 :root {
   /* Backgrounds */
@@ -18,15 +18,14 @@
   /* Accent */
   --color-accent:       var(--color-primary);
 
-  /* Frame notch settings */
-  --frame-thickness:    20px;  /* how thick the black bars are */
-  --notch-width:        80px;  /* total width of each center notch */
-  --notch-depth:        20px;  /* how deep that notch cuts in */
-  --frame-color:        #000;  /* frame color */
+  /* Frame */
+  --frame-thickness:    20px;   /* border width */
+  --frame-color:        #000;   /* border color */
+  --frame-radius:       32px;   /* inner corner roundness */
 }
 
 /* ==========================================================================
-   RESET + BASE STYLES
+   RESET & BASE STYLES
    ========================================================================== */
 *,
 *::before,
@@ -54,85 +53,16 @@ a {
 }
 
 /* ==========================================================================
-   NOTCHED FRAME (4 pseudo-elements)
+   SIMPLE BLACK FRAME WITH ROUNDED CORNERS
    ========================================================================== */
-
-/* ─ Top bar w/ middle downward notch ─ */
+/* Single overlay pseudo-element on <html> */
 html::before {
   content: "";
   position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--frame-thickness);
-  background: var(--frame-color);
-  z-index: 9999;
-  pointer-events: none;
-  clip-path: polygon(
-    0 0,
-    calc(50% - var(--notch-width)/2) 0,
-    50% var(--notch-depth),
-    calc(50% + var(--notch-width)/2) 0,
-    100% 0,
-    100% 100%, 
-    0 100%
-  );
-}
-
-/* ─ Bottom bar w/ middle upward notch ─ */
-html::after {
-  content: "";
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: var(--frame-thickness);
-  background: var(--frame-color);
-  z-index: 9999;
-  pointer-events: none;
-  clip-path: polygon(
-    0 100%,
-    calc(50% - var(--notch-width)/2) 100%,
-    50% calc(100% - var(--notch-depth)),
-    calc(50% + var(--notch-width)/2) 100%,
-    100% 100%,
-    100% 0, 
-    0 0
-  );
-}
-
-/* ─ Left bar w/ right-facing notch ─ */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; bottom: 0; left: 0;
-  width: var(--frame-thickness);
-  background: var(--frame-color);
-  z-index: 9999;
-  pointer-events: none;
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(50% - var(--notch-width)/2),
-    var(--notch-depth) 50%,
-    100% calc(50% + var(--notch-width)/2),
-    100% 100%,
-    0 100%
-  );
-}
-
-/* ─ Right bar w/ left-facing notch ─ */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0; bottom: 0; right: 0;
-  width: var(--frame-thickness);
-  background: var(--frame-color);
-  z-index: 9999;
-  pointer-events: none;
-  clip-path: polygon(
-    100% 0,
-    0 0,
-    0 calc(50% - var(--notch-width)/2),
-    calc(100% - var(--notch-depth)) 50%,
-    0 calc(50% + var(--notch-width)/2),
-    0 100%,
-    100% 100%
-  );
+  inset: 0;                         /* top/right/bottom/left: 0 */
+  pointer-events: none;             /* allow clicks through it */
+  box-sizing: border-box;
+  border: var(--frame-thickness) solid var(--frame-color);
+  border-radius: var(--frame-radius);
+  z-index: 9999;                    /* above everything */
 }
