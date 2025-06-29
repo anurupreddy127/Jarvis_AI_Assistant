@@ -1,20 +1,19 @@
 /* ==========================================================================
-   GLOBAL VARIABLES
+   GLOBAL VARIABLES — palette + frame settings
    ========================================================================== */
 :root {
-  /* Frame settings */
-  --frame-color:        #000;    /* your black border */
-  --frame-thickness:    20px;    /* how thick the border is */
-  --frame-radius:       32px;    /* inner corner radius */
+  /* Frame */
+  --frame-thickness: 20px;   /* how thick the black border is */
+  --frame-radius:    32px;   /* how rounded the *inside* corners are */
+  --frame-color:     #000;   /* border color */
 
-  /* Page palette */
-  --color-bg-light:     #FBFFF1; /* the white inside */
-  --color-text:         #3C3744; /* dark text */
-  --color-accent:       #3D52D5; /* accent blue, etc */
+  /* Your page background / text colors */
+  --color-bg-light:  #FBFFF1;
+  --color-text:      #3C3744;
 }
 
 /* ==========================================================================
-   RESET + BASIC LAYOUT
+   RESET & BASE STYLES
    ========================================================================== */
 *,
 *::before,
@@ -29,51 +28,81 @@ html, body {
 }
 
 html {
-  /* paint the very back black */
-  background-color: var(--frame-color);
+  background: var(--frame-color);
 }
 
 body {
-  /* transparent so html’s black shows around us */
-  background: transparent;
-  position: relative;
-  z-index: 1;           /* sit above our white “window” */
-  overflow-x: hidden;
-  font-family: 'Audiowide', cursive;
+  /* inset the body to reveal the black frame around it */
+  margin: var(--frame-thickness);
+  border-radius: var(--frame-radius);
+  background: var(--color-bg-light);
   color: var(--color-text);
+  font-family: 'Inter', sans-serif;
   line-height: 1.6;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-/* make sure each top-level section sits inside the 20px frame on all sides */
-section {
-  width: 100%;
-  /* calc(100vh – top–frame – bottom–frame) */
-  min-height: calc(100vh - (var(--frame-thickness) * 2));
-  box-sizing: border-box;
-}
-
 
 /* ==========================================================================
-   WHITE “WINDOW” WITH ROUNDED CORNERS
+   SIMPLE FOUR-SIDED FRAME (no notches)
    ========================================================================== */
+/* top bar */
 html::before {
   content: "";
   position: fixed;
-  top:    var(--frame-thickness);
-  left:   var(--frame-thickness);
-  right:  var(--frame-thickness);
-  bottom: var(--frame-thickness);
-  background-color: var(--color-bg-light);
-  border-radius:    var(--frame-radius);
-  pointer-events:   none;
-  z-index:          0;
+  top: 0; left: 0; right: 0;
+  height: var(--frame-thickness);
+  background: var(--frame-color);
+  border-top-left-radius: var(--frame-radius);
+  border-top-right-radius: var(--frame-radius);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* bottom bar */
+html::after {
+  content: "";
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--frame-thickness);
+  background: var(--frame-color);
+  border-bottom-left-radius: var(--frame-radius);
+  border-bottom-right-radius: var(--frame-radius);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* left bar */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  width: var(--frame-thickness);
+  background: var(--frame-color);
+  border-top-left-radius: var(--frame-radius);
+  border-bottom-left-radius: var(--frame-radius);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* right bar */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; bottom: 0; right: 0;
+  width: var(--frame-thickness);
+  background: var(--frame-color);
+  border-top-right-radius: var(--frame-radius);
+  border-bottom-right-radius: var(--frame-radius);
+  z-index: 9999;
+  pointer-events: none;
 }
 
 /* ==========================================================================
-   HERO UTILITY
+   ENSURE FULL-SCREEN SECTIONS SIT INSIDE FRAME
    ========================================================================== */
-.hero {
+section {
   width: 100%;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
+  min-height: calc(100vh - (var(--frame-thickness) * 2));
+  box-sizing: border-box;
 }
