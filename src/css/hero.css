@@ -1,41 +1,38 @@
-/* 1) Hero wrapper fills viewport */
+/* 1) Full-screen hero */
 .hero {
   position: relative;
   width: 100%;
   height: 100vh;
+  background: #0a0a0f;  /* fallback while 3D loads */
   overflow: hidden;
-  background: var(--dark-bg); /* fallback if 3D takes a moment to load */
 }
 
-/* 2) Canvas container sits full-screen */
-.hero-background {
+/* 2) Three.js canvas container */
+.hero-canvas {
   position: absolute;
-  inset: 0;        /* top/right/bottom/left = 0 */
+  inset: 0;    /* top/right/bottom/left = 0 */
   z-index: 0;
 }
-.hero-background canvas {
+
+/* ensure the canvas itself stretches to fill */
+.hero-canvas canvas {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-/* 3) Overlayed title centered */
-.hero-overlay {
+/* 3) Centered overlay title */
+.hero-title {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  pointer-events: none; /* so you can still click through if needed */
-}
-
-.hero-overlay h1 {
   margin: 0;
-  color: #ffffff;
-  font-size: 4rem;         /* adjust to taste */
+  font-size: 4rem;           /* 64px */
   font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-align: center;
+  color: #00ffff;            /* neon cyan */
   text-shadow: 0 0 20px rgba(0,255,255,0.7);
+  letter-spacing: 0.1em;
+  pointer-events: none;      /* clicks pass through */
 }
