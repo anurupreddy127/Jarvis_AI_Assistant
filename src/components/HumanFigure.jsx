@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { createTimeline, stagger, utils } from 'animejs'
+import anime from 'animejs'
 import bustUrl from '../assets/human.glb?url'
 
 export default function HumanFigure() {
@@ -16,7 +16,7 @@ export default function HumanFigure() {
     gsap.registerPlugin(ScrollTrigger)
 
     // … your Three.js setup, loading, point-cloud & head→sphere morph here …
-    // assume “pointsGroup” is a THREE.Group() containing all THREE.Points
+    // assume "pointsGroup" is a THREE.Group() containing all THREE.Points
 
     // 1) build your anime.js timeline exactly as you had it:
     const { random, cos, sin, sqrt, PI } = Math
@@ -31,16 +31,16 @@ export default function HumanFigure() {
     const bubbles = []
     for (let i = 0; i < count; i++) {
       const el = document.createElement('div')
-      const h  = utils.random(15, 25)
-      const l  = utils.random(10, 18)
-      utils.set(el, { background: `hsl(${h},60%,${l}%)` })
+      const h  = anime.random(15, 25)
+      const l  = anime.random(10, 18)
+      anime.set(el, { background: `hsl(${h},60%,${l}%)` })
       el[theta]  = random() * PI * 2
       el[radius] = target.r * sqrt(random())
       document.body.appendChild(el)
       bubbles.push(el)
     }
 
-    const bubbleTl = createTimeline({
+    const bubbleTl = anime.timeline({
       autoplay: false,
       defaults: {
         loop: true,
@@ -53,7 +53,7 @@ export default function HumanFigure() {
         targets: bubbles,
         x: el =>  target.x + el[radius]*cos(el[theta]),
         y: el =>  target.y + el[radius]*sin(el[theta]),
-        duration: () => duration + utils.random(-100,100),
+        duration: () => duration + anime.random(-100,100),
         easing: 'inOut(1.5)',
         update: anim => {
           // mutate theta+radius on loop
@@ -64,21 +64,21 @@ export default function HumanFigure() {
             }
           }
         }
-      }, stagger(duration/count * 1.125))
+      }, anime.stagger(duration/count * 1.125))
       .add({
         targets: target,
-        r: () => win.w * utils.random(.05,.5,2),
+        r: () => win.w * anime.random(.05,.5,2),
         duration: 1250,
       }, 0)
       .add({
         targets: target,
-        x: () => utils.random(-win.w,win.w),
+        x: () => anime.random(-win.w,win.w),
         modifier: x => x + Math.sin(bubbleTl.currentTime*.0007) * win.w*.65,
         duration: 2800,
       }, 0)
       .add({
         targets: target,
-        y: () => utils.random(-win.h,win.h),
+        y: () => anime.random(-win.h,win.h),
         modifier: y => y + Math.cos(bubbleTl.currentTime*.00012)*win.h*.65,
         duration: 1800,
       }, 0)
