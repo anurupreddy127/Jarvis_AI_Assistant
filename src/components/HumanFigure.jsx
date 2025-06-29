@@ -59,7 +59,7 @@ export default function HumanFigure() {
 
             const pointsMat = new THREE.PointsMaterial({
               color: 0x3C3744,    // darker grey
-              size:  0.02,
+              size:  0.01,
               sizeAttenuation: true,
             })
             const points = new THREE.Points(child.geometry, pointsMat)
