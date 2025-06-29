@@ -37,10 +37,10 @@ export default function HumanFigure() {
     const keyLight = new THREE.DirectionalLight(0x888888, 1.0)
     keyLight.position.set(5, 10, 7)
     scene.add(keyLight)
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
+    const fillLight = new THREE.DirectionalLight(0x888888, 0.5)
     fillLight.position.set(-5, -5, 5)
     scene.add(fillLight)
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.7)
+    const rimLight = new THREE.DirectionalLight(0x888888, 0.7)
     rimLight.position.set(-5, 10, -5)
     scene.add(rimLight)
 
