@@ -1,31 +1,5 @@
 /* ==========================================================================
-   GLOBAL VARIABLES — palette + frame settings
-   ========================================================================== */
-:root {
-  /* Backgrounds */
-  --color-bg-dark:      #3C3744;
-  --color-bg-light:     #FBFFF1;
-
-  /* Primary blues */
-  --color-primary-dark: #090C9B;
-  --color-primary:      #3D52D5;
-  --color-primary-light:#B4C5E4;
-
-  /* Text */
-  --color-text:         var(--color-bg-dark);
-  --color-text-inverse: var(--color-bg-light);
-
-  /* Accent */
-  --color-accent:       var(--color-primary);
-
-  /* Frame */
-  --frame-thickness:    20px;   /* width of the black border */
-  --frame-radius:       32px;   /* how rounded the *inside* corners are */
-  --frame-color:        #000;   /* border color */
-}
-
-/* ==========================================================================
-   RESET & BASE STYLES
+   RESET & BASE STYLES (unchanged)
    ========================================================================== */
 *,
 *::before,
@@ -39,15 +13,17 @@ html, body {
   height: 100%;
 }
 
-/* Paint the *outermost* background black */
+/* ==========================================================================
+   GLOBAL LAYOUT & COLORS
+   ========================================================================== */
+/* Give html your normal page background */
 html {
-  background-color: var(--frame-color);
+  background-color: var(--color-bg-light);
 }
 
-/* Inset the body by the “frame” thickness and round its inner corners */
 body {
-  margin: var(--frame-thickness);
-  border-radius: var(--frame-radius);
+  margin: 0;                        /* reset any inset margin */
+  border-radius: 0;                 /* no body rounding */
   background-color: var(--color-bg-light);
   color: var(--color-text);
   font-family: 'Audiowide', cursive;
@@ -61,10 +37,22 @@ a {
 }
 
 /* ==========================================================================
-   OPTIONAL: utility classes or global overrides below
+   FIXED BLACK FRAME WITH ROUNDED INNER CORNERS
    ========================================================================== */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;                         /* top/right/bottom/left: 0 */
+  pointer-events: none;             /* clicks pass through */
+  box-sizing: border-box;
+  border: var(--frame-thickness) solid var(--frame-color);
+  border-radius: var(--frame-radius);
+  z-index: 9999;                    /* always on top */
+}
 
-/* Example: center a full-height hero */
+/* ==========================================================================
+   OPTIONAL: utility classes below
+   ========================================================================== */
 .hero {
   width: 100%;
   height: 100vh;
