@@ -18,9 +18,17 @@ export default function HumanFigure() {
     const scene  = new THREE.Scene()
     const W      = mountRef.current.clientWidth
     const H      = mountRef.current.clientHeight
-    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
-    camera.position.set(0, 0, 4)
-    camera.lookAt(0, 0, 0)
+const frustumSize = sphereRadius * 2 * 1.2  // a little padding
+const camera = new THREE.OrthographicCamera(
+  frustumSize * aspect / -2,
+  frustumSize * aspect /  2,
+  frustumSize /  2,
+  frustumSize / -2,
+  0.1,
+  1000
+)
+camera.position.set(0, 0, 10)
+camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
     renderer.setSize(W, H)
