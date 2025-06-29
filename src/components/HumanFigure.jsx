@@ -19,7 +19,7 @@ export default function HumanFigure() {
     const W      = mountRef.current.clientWidth
     const H      = mountRef.current.clientHeight
     const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
-    camera.position.set(0, 0, 8)
+    camera.position.set(0, 0, 4)
     camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
