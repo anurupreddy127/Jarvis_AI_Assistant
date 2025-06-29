@@ -1,6 +1,6 @@
 // src/components/Features.jsx
 import React from 'react'
-import BrainFigure from './BrainFigure'
+
 import '../css/features.css'
 
 const featuresData = [
@@ -12,11 +12,6 @@ const featuresData = [
 export default function Features() {
   return (
     <section id="features" className="features-section">
-      {/* background brain */}
-      <div className="features-bg">
-        <BrainFigure />
-      </div>
-
       {/* overlay cards */}
       <div className="features-container">
         <h2>Neural Features</h2>
