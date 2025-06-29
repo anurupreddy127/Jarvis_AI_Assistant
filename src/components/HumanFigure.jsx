@@ -53,7 +53,7 @@ export default function HumanFigure() {
         const bbox   = new THREE.Box3().setFromObject(model)
         const center = bbox.getCenter(new THREE.Vector3())
         model.position.sub(center)
-        model.scale.setScalar(1)                          // same as before
+        model.scale.setScalar(2)                          // same as before
         scene.add(model)
         modelRef.current = model
 
