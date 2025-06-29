@@ -57,3 +57,108 @@ body::before {
   z-index: 9999;             /* above everything else */
 }
 
+/* -------------------------------------------------------------------
+   GLOBAL VARIABLES — tweak these to change thickness / notch size
+------------------------------------------------------------------- */
+:root {
+  --frame-thickness: 20px;  /* width of your black frame */
+  --notch-width:     80px;  /* total width of the middle notch */
+  --notch-depth:     20px;  /* how deep the notch cuts in */
+  --frame-color:     #000;  /* frame color */
+}
+
+/* Make sure html/body fill the viewport */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* ---------------------------
+   TOP BORDER w/ middle notch
+   (html::before)
+---------------------------- */
+html::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--frame-thickness);
+  background: var(--frame-color);
+  z-index: 9999;
+  pointer-events: none;
+  clip-path: polygon(
+    /* left straight edge */     0 0,
+    /* run to just before notch*/ calc(50% - var(--notch-width)/2) 0,
+    /* notch point */           50% var(--notch-depth),
+    /* back up to top edge */   calc(50% + var(--notch-width)/2) 0,
+    /* finish top edge */       100% 0,
+    /* carry around bottom of this band */ 100% 100%, 0 100%
+  );
+}
+
+/* ---------------------------
+   BOTTOM BORDER w/ middle notch
+   (html::after)
+---------------------------- */
+html::after {
+  content: "";
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--frame-thickness);
+  background: var(--frame-color);
+  z-index: 9999;
+  pointer-events: none;
+  clip-path: polygon(
+    /* start bottom-left */     0 100%,
+    /* run to just before notch */ calc(50% - var(--notch-width)/2) 100%,
+    /* notch point */           50% calc(100% - var(--notch-depth)),
+    /* back down to bottom edge */ calc(50% + var(--notch-width)/2) 100%,
+    /* finish bottom edge */    100% 100%,
+    /* carry around top of this band */ 100% 0, 0 0
+  );
+}
+
+/* ---------------------------
+   LEFT BORDER w/ middle notch
+   (body::before)
+---------------------------- */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  width: var(--frame-thickness);
+  background: var(--frame-color);
+  z-index: 9999;
+  pointer-events: none;
+  clip-path: polygon(
+    /* start top-left */        0 0,
+    /* run along top edge */    100% 0,
+    /* down to just above notch */ 100% calc(50% - var(--notch-width)/2),
+    /* notch point */           var(--notch-depth) 50%,
+    /* back up to side edge */  100% calc(50% + var(--notch-width)/2),
+    /* finish down left side */ 100% 100%, 0 100%
+  );
+}
+
+/* ---------------------------
+   RIGHT BORDER w/ middle notch
+   (body::after)
+---------------------------- */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; bottom: 0; right: 0;
+  width: var(--frame-thickness);
+  background: var(--frame-color);
+  z-index: 9999;
+  pointer-events: none;
+  clip-path: polygon(
+    /* start top-right */       100% 0,
+    /* run along top edge */    0 0,
+    /* down to just above notch */ 0 calc(50% - var(--notch-width)/2),
+    /* notch point */           calc(100% - var(--notch-depth)) 50%,
+    /* back up to side edge */  0 calc(50% + var(--notch-width)/2),
+    /* finish down right side */0 100%, 100% 100%
+  );
+}
+
