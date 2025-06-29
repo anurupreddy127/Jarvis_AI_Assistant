@@ -21,11 +21,17 @@ const featuresData = [
 
 export default function Features() {
   return (
-    <section id="features" className="features-section">
+  <section id="features" className="features-section">
+      {/* 1) full-bleed brain model */}
+      <div className="features-background">
+        <BrainFigure />
+      </div>
+
+      {/* 2) your feature cards on top */}
       <div className="features-container">
         <h2 className="features-title">Neural Features</h2>
         <div className="features-grid">
-          {featuresData.map((f, i) => (
+          {featuresData.map((f,i) => (
             <div key={i} className="feature-card">
               <div className="feature-icon">{f.icon}</div>
               <h3 className="feature-name">{f.title}</h3>
