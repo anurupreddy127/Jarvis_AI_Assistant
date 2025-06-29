@@ -10,11 +10,9 @@ function App() {
       <main>
         <Hero />
         <About />
-        <Features />
-        <Demo />
-        <Download />
+
       </main>
-      <Footer />
+
     </div>
   )
 }
