@@ -5,15 +5,13 @@ import '../css/hero.css'
 export default function Hero() {
   return (
     <section className="hero">
-      {/* Full-bleed 3D background */}
-      <div className="hero-background">
+      {/* full-screen 3D canvas */}
+      <div className="hero-canvas">
         <HumanFigure />
       </div>
 
-      {/* Overlayed name */}
-      <div className="hero-overlay">
-        <h1>JARVIS</h1>
-      </div>
+      {/* overlayed text */}
+      <div className="hero-title">JARVIS</div>
     </section>
   )
 }
