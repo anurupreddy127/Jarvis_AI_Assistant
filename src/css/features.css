@@ -1,37 +1,25 @@
-/* position the 3D canvas behind everything */
+/* src/css/features.css */
+
 .features-section {
   position: relative;
-  overflow: hidden;
   min-height: calc(100vh - (var(--frame-thickness)*2));
+  overflow: hidden;
 }
 
-/* full-bleed background for brain */
-.features-background {
+.features-bg {
   position: absolute;
-  inset: 0;           /* top/right/bottom/left: 0 */
+  inset: 0;
   z-index: 0;
   pointer-events: none;
 }
 
-.brain-figure-container,
-.brain-figure-container canvas {
+.features-bg > div, /* BrainFigure wrapper */
+.features-bg canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
 
-
-/* ensure the BrainFigure canvas fills */
-.features-background .brain-figure-container,
-.features-background canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-
-
-/* your existing container sits on top */
 .features-container {
   position: relative;
   z-index: 1;
@@ -39,48 +27,21 @@
   margin: 0 auto;
   padding: 4rem 1rem;
   text-align: center;
-  color: var(--color-text);
-}
-
-.features-title {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  color: var(--color-text);
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
 }
 
 .feature-card {
-  background: #fff;
+  background: var(--color-bg-light);
+  padding: 2rem;
   border-radius: 0.75rem;
-  padding: 2rem 1.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-.feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
 .feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: var(--color-accent);
-}
-
-.feature-name {
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
-  color: var(--color-primary-dark);
-}
-
-.feature-desc {
-  font-size: 1rem;
-  color: var(--color-text);
-  line-height: 1.5;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
