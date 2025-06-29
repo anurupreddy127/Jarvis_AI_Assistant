@@ -49,8 +49,8 @@ export default function Features() {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
-        start: 'top 80%',    // when top of features hits 80% down viewport
-        end: 'bottom 20%',   // until bottom reaches 20% from top
+        start: 'top bottom',    // when top of features hits 80% down viewport
+        end: 'bottom top',   // until bottom reaches 20% from top
         scrub: true,
       },
     })
