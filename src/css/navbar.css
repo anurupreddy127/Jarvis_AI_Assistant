@@ -1,45 +1,77 @@
-/* css/navbar.css */
+/* src/css/navbar.css */
+
+/* 1) Fixed, transparent header that turns solid on scroll */
 .header {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  padding: 20px 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
   background: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
   z-index: 1000;
 }
 
+.header.scrolled {
+  background: rgba(10, 10, 15, 0.95);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+/* 2) Centered nav container */
 .nav {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+}
+
+/* 3) Brand/logo */
+.nav-brand .logo {
+  display: flex;
   align-items: center;
 }
 
+.brand-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-cyan);
+  text-shadow: 0 0 8px var(--primary-cyan);
+  letter-spacing: 2px;
+}
+
+/* 4) Nav links */
 .nav-links {
   display: flex;
   gap: 32px;
 }
+
 .nav-links a {
+  position: relative;
   font-size: 14px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--text-primary);
-  transition: color 0.3s;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
+
 .nav-links a:hover {
   color: var(--primary-cyan);
 }
+
+/* 5) Underline animation */
 .nav-links a::after {
   content: "";
   position: absolute;
-  bottom: -4px; left: 0;
-  width: 0; height: 2px;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
   background: var(--primary-cyan);
-  transition: width 0.3s;
+  transition: width 0.3s ease;
 }
+
 .nav-links a:hover::after {
   width: 100%;
 }
-
-/* …and the rest of your logo/spin rules… */
