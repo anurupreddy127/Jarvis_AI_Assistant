@@ -2,7 +2,10 @@
 import React, { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import bustUrl from '../assets/human.glb?url'
+
 
 export default function HumanFigure() {
   const mountRef = useRef(null)
