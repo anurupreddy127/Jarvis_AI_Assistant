@@ -15,10 +15,10 @@ export default function HumanFigure() {
     gsap.registerPlugin(ScrollTrigger)
 
     // 1) Three.js setup
-    const scene    = new THREE.Scene()
-    const W        = mountRef.current.clientWidth
-    const H        = mountRef.current.clientHeight
-    const camera   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000)
+    const scene  = new THREE.Scene()
+    const W      = mountRef.current.clientWidth
+    const H      = mountRef.current.clientHeight
+    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
     camera.position.set(0, 0, 4)
     camera.lookAt(0, 0, 0)
 
@@ -29,12 +29,15 @@ export default function HumanFigure() {
 
     // 2) Lights
     scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
-    const key   = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(5,10,7)
-    const fill  = new THREE.DirectionalLight(0xffffff, 0.5); fill.position.set(-5,-5,5)
-    const rim   = new THREE.DirectionalLight(0xffffff, 0.7); rim.position.set(-5,10,-5)
+    const key  = new THREE.DirectionalLight(0xffffff, 1.0)
+    key.position.set(5, 10, 7)
+    const fill = new THREE.DirectionalLight(0xffffff, 0.5)
+    fill.position.set(-5, -5, 5)
+    const rim  = new THREE.DirectionalLight(0xffffff, 0.7)
+    rim.position.set(-5, 10, -5)
     scene.add(key, fill, rim)
 
-    // 3) Load model + point cloud
+    // 3) Load model + point-cloud + morph setup
     new GLTFLoader().load(
       bustUrl,
       (gltf) => {
@@ -47,99 +50,82 @@ export default function HumanFigure() {
         model.position.sub(center)
         model.scale.setScalar(0.8)
 
-const sphereGeometry = new THREE.SphereGeometry(1.5, 64, 64)
-const spherePositions = sphereGeometry.getAttribute('position').array
+        // prepare sphere template
+        const sphereRadius     = 2.5
+        const sphereGeometry   = new THREE.SphereGeometry(sphereRadius, 64, 64)
+        const spherePositions  = sphereGeometry.getAttribute('position').array
 
-let headPositions = []
-let morphTargets = []
+        // traverse meshes, create Points and store morph arrays
+        model.traverse(child => {
+          if (!child.isMesh) return
 
+          // hide mesh
+          child.material.transparent = true
+          child.material.opacity     = 0
 
+          // create points
+          const points = new THREE.Points(
+            child.geometry.clone(),
+            new THREE.PointsMaterial({ color: 0x3C3744, size: 0.01, sizeAttenuation: true })
+          )
+          // apply world transform
+          points.applyMatrix4(child.matrixWorld)
+          model.add(points)
 
- // 3️⃣ point-cloud + prepare for morph
-  model.traverse(child => {
-    if (!child.isMesh) return
+          // capture head positions
+          const posAttr  = points.geometry.getAttribute('position')
+          const headArr  = Float32Array.from(posAttr.array)
 
-    // hide the original mesh
-    child.material.transparent = true
-    child.material.opacity     = 0
+          // compute matching sphere positions
+          const sphereArr = new Float32Array(headArr.length)
+          for (let i = 0; i < headArr.length; i += 3) {
+            const v = new THREE.Vector3(
+              headArr[i], headArr[i + 1], headArr[i + 2]
+            ).normalize().multiplyScalar(sphereRadius)
+            sphereArr[i]     = v.x
+            sphereArr[i + 1] = v.y
+            sphereArr[i + 2] = v.z
+          }
 
-    // create Points exactly as before
-    const points = new THREE.Points(
-      child.geometry.clone(),
-      new THREE.PointsMaterial({ color: 0x3C3744, size: 0.01, sizeAttenuation: true })
-    )
-    // bake in the mesh’s world transform so the dots sit correctly
-    points.applyMatrix4(child.matrixWorld)
-    model.add(points)
-
-    // capture that transformed position buffer as our "head" shape
-    const posAttr = points.geometry.getAttribute('position')
-    const headArray = Float32Array.from(posAttr.array)
-
-    // compute sphere positions matching count
-    const sphereRadius = 2.5  // tweak to desired size
-    const sphereArray = new Float32Array(headArray.length)
-    for (let i = 0; i < headArray.length; i += 3) {
-      // normalize the head-point to lie on a sphere
-      const v = new THREE.Vector3(
-        headArray[i + 0],
-        headArray[i + 1],
-        headArray[i + 2]
-      ).normalize().multiplyScalar(sphereRadius)
-      sphereArray[i + 0] = v.x
-      sphereArray[i + 1] = v.y
-      sphereArray[i + 2] = v.z
-    }
-
-    // stash both arrays for morphing later
-    points.userData.headArray   = headArray
-    points.userData.sphereArray = sphereArray
-
-    // we'll animate the live position attribute in onUpdate()
-  })
-
-
+          // store for morph
+          points.userData.headArray   = headArr
+          points.userData.sphereArray = sphereArr
+        })
 
         scene.add(model)
 
+        // 4) ScrollTrigger morph
         gsap.to({ t: 0 }, {
-  t: 1,
-  scrollTrigger: {
-    trigger: '.hero',
-    start: 'bottom bottom',
-    endTrigger: '#about',
-    end: 'top top',
-    scrub: true,
-  },
-  onUpdate: function () {
-    const t = this.targets()[0].t
-    model.traverse(child => {
-      if (child.isPoints) {
-        const original = child.userData.original
-        const morph = child.geometry.getAttribute('morphTarget').array
-        const positionAttr = child.geometry.getAttribute('position')
+          t: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.hero',
+            start:   'bottom bottom',
+            end:     'bottom top',
+            scrub:   true,
+          },
+          onUpdate() {
+            const t = this.targets()[0].t
+            model.traverse(child => {
+              if (!child.isPoints) return
+              const pa   = child.geometry.attributes.position.array
+              const head = child.userData.headArray
+              const sph  = child.userData.sphereArray
+              for (let i = 0; i < pa.length; i++) {
+                pa[i] = THREE.MathUtils.lerp(head[i], sph[i], t)
+              }
+              child.geometry.attributes.position.needsUpdate = true
+            })
+          }
+        })
 
-        for (let i = 0; i < positionAttr.count; i++) {
-          const j = i * 3
-          positionAttr.array[j]     = THREE.MathUtils.lerp(original[j],     morph[j],     t)
-          positionAttr.array[j + 1] = THREE.MathUtils.lerp(original[j + 1], morph[j + 1], t)
-          positionAttr.array[j + 2] = THREE.MathUtils.lerp(original[j + 2], morph[j + 2], t)
-        }
-        positionAttr.needsUpdate = true
-      }
-    })
-  }
-})
-
-
-        // 4) ScrollTrigger — move model.y from 0 → 3 as .hero → #about
+        // 5) ScrollTrigger slide Y
         gsap.to(model.position, {
           y: -0.8,
           ease: 'none',
           scrollTrigger: {
             trigger: '.hero',
             start: 'bottom bottom',
-            endTrigger: '#about',
             end: 'bottom top',
             scrub: true,
           }
@@ -149,7 +135,7 @@ let morphTargets = []
       err => console.error('GLTF load error:', err)
     )
 
-    // 5) Mouse-follow
+    // 6) Mouse-follow
     let mx = 0, my = 0
     const onMouse = e => {
       mx = (e.clientX / window.innerWidth)  * 2 - 1
@@ -157,7 +143,7 @@ let morphTargets = []
     }
     window.addEventListener('mousemove', onMouse)
 
-    // 6) Render loop
+    // 7) Render loop
     const animate = () => {
       requestAnimationFrame(animate)
       const m = modelRef.current
@@ -172,15 +158,14 @@ let morphTargets = []
     // cleanup
     return () => {
       window.removeEventListener('mousemove', onMouse)
-     renderer.dispose()
-     // only remove the canvas if it's still mounted
-     if (
-       mountRef.current && 
-       renderer.domElement.parentNode === mountRef.current
-     ) {
-       mountRef.current.removeChild(renderer.domElement)
-     }
-   ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      renderer.dispose()
+      if (
+        mountRef.current &&
+        renderer.domElement.parentNode === mountRef.current
+      ) {
+        mountRef.current.removeChild(renderer.domElement)
+      }
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
   }, [])
 
