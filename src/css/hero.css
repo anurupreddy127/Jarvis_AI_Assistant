@@ -1,167 +1,111 @@
-/* Hero.css */
+/* src/css/hero.css */
 
-/* 1) Hero section wrapper */
+/* 1) Hero wrapper */
 .hero {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
   background: var(--dark-bg);
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
-/* 2) Full-bleed 3D background */
-.hero-background {
-  position: absolute;
-  inset: 0;       /* top/right/bottom/left = 0 */
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
-.hero-background canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* 3) Overlayed content container */
+/* 2) Two-column layout: text on left, model on right */
 .hero-container {
-  position: relative;
-  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 100%;
-  display: flex;
-  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 4) Inner text block */
+/* 3) Text column */
 .hero-content {
+  flex: 1 1 50%;
   max-width: 600px;
+  z-index: 1; /* above any background overlays */
 }
 
-/* 5) Title and subtitles */
+/* 4) Figure column */
+.hero-figure {
+  flex: 1 1 50%;
+  display: flex;
+  justify-content: flex-end; /* push model to the right */
+  align-items: center;
+  /* give it a fixed aspect ratio if you like: */
+  /* aspect-ratio: 4 / 5; */
+}
+.human-figure-container {
+  width: 100%;
+  max-width: 500px;  /* adjust to taste */
+  height: auto;
+}
+.human-figure-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* 5) Typography & spacing (feel free to tweak) */
 .hero-title {
-  font-size: 56px;
+  font-size: 4rem;    /* 64px */
   font-weight: 900;
   line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 24px;
+  margin-bottom: 1rem;
   color: var(--text-primary);
 }
-
-.hero-title .ai-text {
+.hero-title .ai-text,
+.hero-title .subtitle {
+  font-size: 1.25rem; /* 20px */
   display: block;
-  font-size: 20px;
   color: var(--text-secondary);
-  margin-bottom: 8px;
 }
-
 .hero-title .gradient-text {
   display: block;
   background: linear-gradient(45deg, var(--primary-cyan), var(--primary-blue));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
 }
 
-.hero-title .subtitle {
-  display: block;
-  font-size: 28px;
-  margin-top: 8px;
-  color: var(--text-primary);
-}
-
-/* 6) Description paragraph */
 .hero-description {
-  font-size: 18px;
+  font-size: 1.125rem;  /* 18px */
   color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 40px;
-  max-width: 500px;
+  margin-bottom: 2rem;
 }
 
-/* 7) Call-to-action buttons */
+/* 6) Button row */
 .hero-actions {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 1rem;
 }
-
+.cta-button,
+.secondary-button {
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 .cta-button {
   background: linear-gradient(45deg, var(--primary-cyan), var(--primary-blue));
   color: var(--dark-bg);
   border: none;
-  padding: 16px 32px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
-
 .cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0,255,255,0.4);
 }
-
 .secondary-button {
   background: transparent;
   border: 2px solid var(--primary-cyan);
   color: var(--primary-cyan);
-  padding: 16px 32px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
-
 .secondary-button:hover {
-  background: rgba(0, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-}
-
-
-/* ───────────────────────────────────────
-   OVERRIDE: lighten hero text legibility
-──────────────────────────────────────── */
-
-/* 1) Soften the dim-overlay so text pops more */
-.hero-background::after {
-  /* make overlay less opaque (was 0.6) */
-  background: rgba(0, 0, 0, 0.3) !important;
-}
-
-/* 2) Force ALL hero text to pure white */
-.hero-title,
-.hero-title span,
-.hero-description,
-.hero-actions button {
-  color: #ffffff !important;
-  opacity: 1 !important;
-}
-
-/* 3) Disable the gradient-clip effect for now */
-.gradient-text {
-  background: none !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* 4) Ensure the content is above the overlay */
-.hero-container {
-  z-index: 2 !important;
+  background: rgba(0,255,255,0.1);
+  box-shadow: 0 0 20px rgba(0,255,255,0.3);
 }
