@@ -134,3 +134,34 @@
   background: rgba(0, 255, 255, 0.1);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
+
+
+/* ───────────────────────────────────────
+   OVERRIDE: lighten hero text legibility
+──────────────────────────────────────── */
+
+/* 1) Soften the dim-overlay so text pops more */
+.hero-background::after {
+  /* make overlay less opaque (was 0.6) */
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 2) Force ALL hero text to pure white */
+.hero-title,
+.hero-title span,
+.hero-description,
+.hero-actions button {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* 3) Disable the gradient-clip effect for now */
+.gradient-text {
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* 4) Ensure the content is above the overlay */
+.hero-container {
+  z-index: 2 !important;
+}
