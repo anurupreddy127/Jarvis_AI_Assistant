@@ -77,6 +77,21 @@ export default function HumanFigure() {
       err => console.error(err)
     )
 
+         // 5) ScrollTrigger tween:
+     //    as you scroll from the bottom of .hero into #about,
+     //    move the model up by 3 units in world-space.
+     gsap.to(model.position, {
+       y: 3, // tweak this to taste—positive y moves “up” in Three.js
+       ease: 'none',
+       scrollTrigger: {
+         trigger: '.hero',        // start this tween when .hero leaves
+         start: 'bottom bottom',   // when hero’s bottom hits viewport bottom
+         endTrigger: '#about',     // until #about scrolls into view
+         end: 'top top',           // when about’s top hits viewport top
+         scrub: true,              // scrub = true makes it follow the scrollbar exactly
+       }
+     })
+
     // 4) mouse tracking
     let mx = 0, my = 0
     const onMouse = e => {
