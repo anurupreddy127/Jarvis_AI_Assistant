@@ -61,6 +61,9 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      <div className="hero-background">
+        <HumanFigure />
+      </div>
     </section>
   )
 }
