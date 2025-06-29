@@ -7,14 +7,14 @@ import bustUrl from '../assets/human.glb?url'
 
 export default function HumanFigure() {
   const mountRef = useRef(null)
+  const modelRef = useRef(null)
 
   useEffect(() => {
-    const container = mountRef.current
-    if (!container) return
-
+    const container = mountRef.current!
     const W = container.clientWidth
     const H = container.clientHeight
 
+    // 1) Scene / camera / renderer
     const scene    = new THREE.Scene()
     const camera   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000)
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
@@ -22,89 +22,81 @@ export default function HumanFigure() {
     renderer.setPixelRatio(window.devicePixelRatio)
     container.appendChild(renderer.domElement)
 
+    // 2) OrbitControls (for inertia, but disable zoom/pan)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.1
-    controls.enableZoom = false
-    controls.enablePan  = false
-    controls.rotateSpeed = 0.7
+    controls.enableZoom    = false
+    controls.enablePan     = false
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
-    const key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(5,10,7); scene.add(key)
-    const fill = new THREE.DirectionalLight(0xffffff, 0.5); fill.position.set(-5,-5,5); scene.add(fill)
-    const rim = new THREE.DirectionalLight(0xffffff, 0.7); rim.position.set(-5,10,-5); scene.add(rim)
+    // 3) Lights
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6)
+    hemi.position.set(0, 20, 0)
+    scene.add(hemi)
 
-    new GLTFLoader().load(
-      bustUrl,
-      gltf => {
-        const model = gltf.scene
-        const box = new THREE.Box3().setFromObject(model)
-        const size = box.getSize(new THREE.Vector3())
-        const center = box.getCenter(new THREE.Vector3())
-        model.position.sub(center)
-        model.scale.setScalar(0.8)
-        scene.add(model)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1)
+    keyLight.position.set(5, 10, 7)
+    scene.add(keyLight)
 
-        // frame camera
-        const scaledH = size.y * 0.8
-        camera.position.set(0,0, scaledH * 1.5)
-        camera.lookAt(0,0,0)
-        camera.updateProjectionMatrix()
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
+    fillLight.position.set(-5, -5, 5)
+    scene.add(fillLight)
 
-        // gradient from dark gray to mid-gray
-        model.traverse(child => {
-          if (!child.isMesh) return
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.7)
+    rimLight.position.set(-5, 10, -5)
+    scene.add(rimLight)
 
-          child.material.transparent = true
-          child.material.opacity = 0
+    // 4) Mouse tracking
+    let mouseX = 0, mouseY = 0
+    window.addEventListener('pointermove', (e) => {
+      mouseX = ( e.clientX / window.innerWidth  ) * 2 - 1
+      mouseY = ( e.clientY / window.innerHeight ) * 2 - 1
+    })
 
-          const geom = child.geometry.clone()
-          geom.computeBoundingBox()
-          const { min, max } = geom.boundingBox
-          const rangeY = max.y - min.y
-          const pos = geom.attributes.position
-          const count = pos.count
-          
-          const colors = new Float32Array(count * 3)
-          for (let i = 0; i < count; i++) {
-            const y = pos.getY(i)
-            const t = (y - min.y) / rangeY
+    // 5) Load model
+    new GLTFLoader().load(bustUrl, (gltf) => {
+      const model = gltf.scene
+      model.scale.setScalar(0.8)
 
-            // darken endpoints: 0.2 (20% gray) → 0.6 (60% gray)
-            const c = THREE.MathUtils.lerp(0.2, 0.6, t)
-            colors[3*i]   = c
-            colors[3*i+1] = c
-            colors[3*i+2] = c
-          }
-          geom.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+      // center
+      const box    = new THREE.Box3().setFromObject(model)
+      const center = box.getCenter(new THREE.Vector3())
+      model.position.sub(center)
 
-          const mat = new THREE.PointsMaterial({
-            vertexColors: true,
-            size: 0.02,
-            sizeAttenuation: true,
-            transparent: true,
-            opacity: 1.0
-          })
+      scene.add(model)
+      modelRef.current = model
 
-          const points = new THREE.Points(geom, mat)
-          points.position.copy(child.position)
-          points.rotation.copy(child.rotation)
-          points.scale.copy(child.scale)
-          model.add(points)
-        })
+      // position camera so the head fills the view
+      const size = box.getSize(new THREE.Vector3())
+      const distance = size.y * 0.6
+      camera.position.set(0, 0, distance)
+      camera.lookAt(0, 0, 0)
+      camera.updateProjectionMatrix()
 
-        const animate = () => {
-          requestAnimationFrame(animate)
-          controls.update()
-          renderer.render(scene, camera)
+      // 6) Animate
+      const animate = () => {
+        requestAnimationFrame(animate)
+
+        // smoothly rotate model towards mouse
+        if (modelRef.current) {
+          const targetRotY = mouseX * Math.PI * 0.2     // ±36°
+          const targetRotX = mouseY * Math.PI * 0.1     // ±18°
+          modelRef.current.rotation.y += (targetRotY - modelRef.current.rotation.y) * 0.05
+          modelRef.current.rotation.x += (targetRotX - modelRef.current.rotation.x) * 0.05
         }
-        animate()
-      },
-      undefined,
-      console.error
+
+        controls.update()
+        renderer.render(scene, camera)
+      }
+      animate()
+    },
+    undefined,
+    (err) => console.error('Failed to load model:', err)
     )
 
+    // cleanup
     return () => {
+      window.removeEventListener('pointermove', () => {})
       renderer.dispose()
       container.removeChild(renderer.domElement)
     }
