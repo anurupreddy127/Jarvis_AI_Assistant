@@ -41,3 +41,19 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* create a fixed “frame” around the viewport */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  pointer-events: none;      /* so it never blocks clicks */
+  box-sizing: border-box;
+  border: 8px solid #000;    /* adjust thickness & color here */
+  border-radius: 12px;       /* rounded corners like your example */
+  z-index: 9999;             /* above everything else */
+}
+
