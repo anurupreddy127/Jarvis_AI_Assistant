@@ -43,6 +43,14 @@ body {
   color: var(--color-text);
   line-height: 1.6;
 }
+/* make sure each top-level section sits inside the 20px frame on all sides */
+section {
+  width: 100%;
+  /* calc(100vh – top–frame – bottom–frame) */
+  min-height: calc(100vh - (var(--frame-thickness) * 2));
+  box-sizing: border-box;
+}
+
 
 /* ==========================================================================
    WHITE “WINDOW” WITH ROUNDED CORNERS
