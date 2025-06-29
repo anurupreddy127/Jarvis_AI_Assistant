@@ -1,42 +1,31 @@
+// src/components/Features.jsx
 import React from 'react'
-import '../css/features.css'
 import BrainFigure from './BrainFigure'
+import '../css/features.css'
 
 const featuresData = [
-  {
-    title: 'Neural Voice Processing',
-    description: 'Advanced speech recognition with 99.7% accuracy using quantum-enhanced NLP.',
-    icon: '🗣️'
-  },
-  {
-    title: 'Quantum Link Analysis',
-    description: 'AI-powered semantic understanding identifies and executes precise link interactions.',
-    icon: '🔗'
-  },
-  {
-    title: 'Adaptive Learning Core',
-    description: 'Self-evolving AI that learns your browsing patterns for personalized efficiency.',
-    icon: '🤖'
-  }
+  { icon: '🗣️', title: 'Neural Voice Processing',    description: '99.7% accuracy via quantum-enhanced NLP.' },
+  { icon: '🔗', title: 'Quantum Link Analysis',        description: 'Semantic understanding for precise clicks.' },
+  { icon: '🤖', title: 'Adaptive Learning Core',       description: 'Self-evolving patterns for personalized browsing.' },
 ]
 
 export default function Features() {
   return (
-  <section id="features" className="features-section">
-      {/* 1) full-bleed brain model */}
-      <div className="features-background">
+    <section id="features" className="features-section">
+      {/* background brain */}
+      <div className="features-bg">
         <BrainFigure />
       </div>
 
-      {/* 2) your feature cards on top */}
+      {/* overlay cards */}
       <div className="features-container">
-        <h2 className="features-title">Neural Features</h2>
+        <h2>Neural Features</h2>
         <div className="features-grid">
           {featuresData.map((f,i) => (
             <div key={i} className="feature-card">
               <div className="feature-icon">{f.icon}</div>
-              <h3 className="feature-name">{f.title}</h3>
-              <p className="feature-desc">{f.description}</p>
+              <h3>{f.title}</h3>
+              <p>{f.description}</p>
             </div>
           ))}
         </div>
