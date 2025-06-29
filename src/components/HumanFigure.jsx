@@ -111,7 +111,7 @@ export default function HumanFigure() {
      ) {
        mountRef.current.removeChild(renderer.domElement)
      }
-      ScrollTrigger.kill()  // optional cleanup
+   ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
   }, [])
 
