@@ -90,6 +90,36 @@ model.traverse(child => {
 
         scene.add(model)
 
+        gsap.to({ t: 0 }, {
+  t: 1,
+  scrollTrigger: {
+    trigger: '.hero',
+    start: 'bottom bottom',
+    endTrigger: '#about',
+    end: 'top top',
+    scrub: true,
+  },
+  onUpdate: function () {
+    const t = this.targets()[0].t
+    model.traverse(child => {
+      if (child.isPoints) {
+        const original = child.userData.original
+        const morph = child.geometry.getAttribute('morphTarget').array
+        const positionAttr = child.geometry.getAttribute('position')
+
+        for (let i = 0; i < positionAttr.count; i++) {
+          const j = i * 3
+          positionAttr.array[j]     = THREE.MathUtils.lerp(original[j],     morph[j],     t)
+          positionAttr.array[j + 1] = THREE.MathUtils.lerp(original[j + 1], morph[j + 1], t)
+          positionAttr.array[j + 2] = THREE.MathUtils.lerp(original[j + 2], morph[j + 2], t)
+        }
+        positionAttr.needsUpdate = true
+      }
+    })
+  }
+})
+
+
         // 4) ScrollTrigger — move model.y from 0 → 3 as .hero → #about
         gsap.to(model.position, {
           y: -0.5,
