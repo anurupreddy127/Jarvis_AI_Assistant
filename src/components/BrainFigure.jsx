@@ -48,7 +48,7 @@ export default function BrainFigure() {
           const geo = child.geometry.clone().applyMatrix4(child.matrixWorld)
           const mat = new THREE.PointsMaterial({
             color: 0x3D52D5,
-            size: 0.2,
+            size: 0.02,
             sizeAttenuation: true
           })
           const points = new THREE.Points(geo, mat)
