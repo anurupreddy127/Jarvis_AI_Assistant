@@ -14,7 +14,7 @@ export default function BrainFigure() {
     const scene    = new THREE.Scene()
     const { clientWidth: W, clientHeight: H } = mountRef.current
     const camera   = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
-    camera.position.set(0, 0, 8)
+    camera.position.set(0, 0, 10)
     camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
