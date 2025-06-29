@@ -73,7 +73,7 @@ if (!mesh) {
 
         const material = new THREE.PointsMaterial({
           color: 0x3D52D5,
-          size: 0.015,
+          size: 0.02,
           sizeAttenuation: true,
           transparent: true,
           opacity: 0.9
