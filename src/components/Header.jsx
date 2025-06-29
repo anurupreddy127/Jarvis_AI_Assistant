@@ -29,9 +29,6 @@ const Header = () => {
       <nav className="nav">
         <div className="nav-brand">
           <div className="logo">
-            <div className="logo-ring">
-              <div className="logo-core">J</div>
-            </div>
             <span className="brand-text">JARVIS</span>
           </div>
         </div>
