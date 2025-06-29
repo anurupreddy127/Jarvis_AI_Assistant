@@ -13,83 +13,83 @@ export default function HumanFigure() {
     const container = mountRef.current
     if (!container) return
 
-    const W = container.clientWidth
-    const H = container.clientHeight
-
-    // Scene / camera / renderer
+    // 1) Scene / camera / renderer
     const scene    = new THREE.Scene()
-    const camera   = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
+    const camera   = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000)
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
-    renderer.setSize(W, H)
+    renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(window.devicePixelRatio)
     container.appendChild(renderer.domElement)
 
-    // Orbit controls (for a little inertia)
+    // 2) OrbitControls for smooth inertia
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.1
     controls.enableZoom    = false
     controls.enablePan     = false
+    controls.rotateSpeed   = 0.7
 
-    // Lights
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6)
-    hemi.position.set(0, 20, 0)
-    scene.add(hemi)
+    // 3) Lights
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
+    const key   = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(5,10,7); scene.add(key)
+    const fill  = new THREE.DirectionalLight(0xffffff, 0.5); fill.position.set(-5,-5,5); scene.add(fill)
+    const rim   = new THREE.DirectionalLight(0xffffff, 0.7); rim.position.set(-5,10,-5); scene.add(rim)
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1)
-    keyLight.position.set(5, 10, 7)
-    scene.add(keyLight)
-
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
-    fillLight.position.set(-5, -5, 5)
-    scene.add(fillLight)
-
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.7)
-    rimLight.position.set(-5, 10, -5)
-    scene.add(rimLight)
-
-    // Mouse tracking variables
-    let mouseX = 0
-    let mouseY = 0
-
-    function handlePointerMove(e) {
+    // 4) Mouse tracking
+    let mouseX = 0, mouseY = 0
+    const onPointerMove = (e) => {
       mouseX = (e.clientX / window.innerWidth) * 2 - 1
       mouseY = (e.clientY / window.innerHeight) * 2 - 1
     }
-    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('pointermove', onPointerMove)
 
-    // Load GLB
-    const loader = new GLTFLoader()
-    loader.load(
+    // 5) Load model
+    new GLTFLoader().load(
       bustUrl,
       (gltf) => {
         const model = gltf.scene
-        // Center & scale
-        const box    = new THREE.Box3().setFromObject(model)
-        const center = box.getCenter(new THREE.Vector3())
+
+        // center & scale
+        const bbox   = new THREE.Box3().setFromObject(model)
+        const center = bbox.getCenter(new THREE.Vector3())
         model.position.sub(center)
-        model.scale.setScalar(0.8)
+        model.scale.setScalar(2)                          // same as before
         scene.add(model)
         modelRef.current = model
 
-        // Frame camera
-        const size     = box.getSize(new THREE.Vector3())
-        const distance = size.y * 0.6
-        camera.position.set(0, 0, distance)
+        // convert each mesh to a Points cloud
+        model.traverse((child) => {
+          if (child.isMesh) {
+            const geom     = child.geometry
+            const pointsM  = new THREE.PointsMaterial({
+              color:    0xffffff,
+              size:     0.02,
+              transparent: true,
+              opacity:  1.0,
+              sizeAttenuation: true
+            })
+            const points   = new THREE.Points(geom, pointsM)
+            points.applyMatrix4(child.matrix) // copy transform
+            model.add(points)
+            child.visible = false
+          }
+        })
+
+        // frame the camera to fit the scaled model
+        const newBox = new THREE.Box3().setFromObject(model)
+        const size   = newBox.getSize(new THREE.Vector3())
+        camera.position.set(0, 0, size.y * 1.2)
         camera.lookAt(0, 0, 0)
         camera.updateProjectionMatrix()
 
-        // Animation loop
+        // animate
         const animate = () => {
           requestAnimationFrame(animate)
-
-          // Lerp rotation toward mouse
-          if (modelRef.current) {
-            const targetY = mouseX * Math.PI * 0.2  // ±36°
-            const targetX = mouseY * Math.PI * 0.1  // ±18°
-            modelRef.current.rotation.y += (targetY - modelRef.current.rotation.y) * 0.05
-            modelRef.current.rotation.x += (targetX - modelRef.current.rotation.x) * 0.05
-          }
+          // smooth mouse-follow
+          const targetY = mouseX * Math.PI * 0.2
+          const targetX = mouseY * Math.PI * 0.1
+          model.rotation.y += (targetY - model.rotation.y) * 0.05
+          model.rotation.x += (targetX - model.rotation.x) * 0.05
 
           controls.update()
           renderer.render(scene, camera)
@@ -97,12 +97,12 @@ export default function HumanFigure() {
         animate()
       },
       undefined,
-      (err) => console.error('Model failed to load:', err)
+      (err) => console.error('Failed to load GLB:', err)
     )
 
-    // Cleanup
+    // 6) Cleanup
     return () => {
-      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('pointermove', onPointerMove)
       renderer.dispose()
       container.removeChild(renderer.domElement)
     }
