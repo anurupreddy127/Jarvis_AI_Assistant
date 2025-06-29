@@ -65,7 +65,7 @@ export default function HumanFigure() {
 
         // 4) ScrollTrigger — move model.y from 0 → 3 as .hero → #about
         gsap.to(model.position, {
-          y: -1.2,
+          y: -1,
           ease: 'none',
           scrollTrigger: {
             trigger: '.hero',
