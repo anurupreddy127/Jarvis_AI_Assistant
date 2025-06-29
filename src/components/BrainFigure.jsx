@@ -13,7 +13,7 @@ export default function BrainFigure() {
     // — Scene, camera, renderer
     const scene    = new THREE.Scene()
     const { clientWidth: W, clientHeight: H } = mountRef.current
-    const camera   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000)
+    const camera   = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
     camera.position.set(0, 0, 4)
     camera.lookAt(0, 0, 0)
 
@@ -22,8 +22,8 @@ export default function BrainFigure() {
     renderer.setPixelRatio(window.devicePixelRatio)
     mountRef.current.appendChild(renderer.domElement)
 
-    // — Simple ambient + directional light
-    scene.add(new THREE.AmbisphereLight(0xffffff, 0x444444, 0.6))
+    // — Simple hemisphere + directional light
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
     const dir = new THREE.DirectionalLight(0xffffff, 1)
     dir.position.set(5, 10, 7)
     scene.add(dir)
