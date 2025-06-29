@@ -47,19 +47,46 @@ export default function HumanFigure() {
         model.position.sub(center)
         model.scale.setScalar(0.8)
 
-        // point-cloud conversion
-        model.traverse(child => {
-          if (child.isMesh) {
-            child.material.transparent = true
-            child.material.opacity     = 0
-            const points = new THREE.Points(
-              child.geometry,
-              new THREE.PointsMaterial({ color: 0x3C3744, size: 0.01, sizeAttenuation: true })
-            )
-            points.applyMatrix4(child.matrix)
-            model.add(points)
-          }
-        })
+const sphereGeometry = new THREE.SphereGeometry(1.5, 64, 64)
+const spherePositions = sphereGeometry.getAttribute('position').array
+
+let headPositions = []
+let morphTargets = []
+
+model.traverse(child => {
+  if (child.isMesh) {
+    const positions = child.geometry.getAttribute('position')
+    const count = positions.count
+
+    headPositions.push(positions.array.slice()) // original shape
+
+    // Match sphere point count or pad/repeat
+    const sphere = new Float32Array(positions.count * 3)
+    for (let i = 0; i < positions.count; i++) {
+      const j = i * 3
+      const k = j % spherePositions.length
+      sphere[j]     = spherePositions[k]
+      sphere[j + 1] = spherePositions[k + 1]
+      sphere[j + 2] = spherePositions[k + 2]
+    }
+
+    morphTargets.push(sphere)
+
+    const material = new THREE.PointsMaterial({
+      color: 0x3C3744,
+      size: 0.01,
+      sizeAttenuation: true,
+    })
+
+    const points = new THREE.Points(child.geometry.clone(), material)
+    points.geometry.setAttribute('morphTarget', new THREE.BufferAttribute(sphere, 3))
+    child.visible = false // hide original mesh
+    model.add(points)
+
+    points.userData.original = positions.array.slice()
+  }
+})
+
 
         scene.add(model)
 
