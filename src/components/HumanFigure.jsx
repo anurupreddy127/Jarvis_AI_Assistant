@@ -76,20 +76,42 @@ export default function HumanFigure() {
           const posAttr  = points.geometry.getAttribute('position')
           const headArr  = Float32Array.from(posAttr.array)
 
-          // compute matching sphere positions
-          const sphereArr = new Float32Array(headArr.length)
-          for (let i = 0; i < headArr.length; i += 3) {
-            const v = new THREE.Vector3(
-              headArr[i], headArr[i + 1], headArr[i + 2]
-            ).normalize().multiplyScalar(sphereRadius)
-            sphereArr[i]     = v.x
-            sphereArr[i + 1] = v.y
-            sphereArr[i + 2] = v.z
-          }
+// …inside your GLTFLoader callback, after you build `headArr`…
 
-          // store for morph
-          points.userData.headArray   = headArr
-          points.userData.sphereArray = sphereArr
+// 1) how many points do we have?
+const pointCount = headArr.length / 3
+
+// 2) prepare an array to hold the uniform sphere positions
+const sphereArr = new Float32Array(headArr.length)
+const R = 2.5  // your desired sphere radius
+
+// 3) golden angle constant
+const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+
+for (let i = 0; i < pointCount; i++) {
+  const j = i * 3
+
+  // fraction along [0,1]
+  const t = i / (pointCount - 1)
+
+  // latitude φ and longitude θ in radians
+  const phi   = Math.acos(1 - 2 * t)
+  const theta = goldenAngle * i
+
+  // spherical → Cartesian
+  const x = Math.sin(phi) * Math.cos(theta)
+  const y = Math.sin(phi) * Math.sin(theta)
+  const z = Math.cos(phi)
+
+  sphereArr[j + 0] = x * R
+  sphereArr[j + 1] = y * R
+  sphereArr[j + 2] = z * R
+}
+
+// stash them exactly like before:
+points.userData.headArray   = headArr
+points.userData.sphereArray = sphereArr
+
         })
 
         scene.add(model)
