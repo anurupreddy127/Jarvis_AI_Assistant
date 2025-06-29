@@ -62,7 +62,7 @@ export default function HumanFigure() {
           if (child.isMesh) {
             const geom     = child.geometry
             const pointsM  = new THREE.PointsMaterial({
-              color:    0xffffff,
+              color:    0x888888,
               size:     0.02,
               transparent: true,
               opacity:  1.0,
