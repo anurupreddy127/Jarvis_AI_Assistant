@@ -1,19 +1,19 @@
 /* src/css/navbar.css */
 
-/* 1) the header only appears when `.scrolled` */
+/* 1) Header always transparent, only appears on scroll */
 .header {
   position: fixed;
   top: 0; left: 0; right: 0;
+  display: none;               /* hidden until you scroll */
   z-index: 1000;
-  display: none;
 }
 .header.scrolled {
-  display: block;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
+  display: block;              /* show when scrolled */
+  background: transparent;     /* no backdrop at all */
+  box-shadow: none;            /* no glow or shadow */
 }
 
-/* 2) basic nav layout */
+/* 2) Simple flex container, right-aligned */
 .nav {
   max-width: 1200px;
   margin: 0 auto;
@@ -21,30 +21,34 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  position: relative;
 }
 
-/* 3) hamburger */
+/* 3) Hamburger button (no bg) */
 .hamburger {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 24px;
   height: 18px;
-  background: none;
+  padding: 0;
+  background: none;         /* fully clear */
   border: none;
   cursor: pointer;
   z-index: 1100;
 }
+
+/* 4) Bars themselves are black */
 .hamburger span {
   display: block;
   height: 2px;
-  background: var(--color-text-inverse);
+  background: #000;          /* pure black bars */
   border-radius: 1px;
   transition: transform 0.3s, opacity 0.3s;
 }
+
+/* 5) “X” animation when open */
 .hamburger.open span:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
+  transform: translateY(8px)  rotate(45deg);
 }
 .hamburger.open span:nth-child(2) {
   opacity: 0;
@@ -53,7 +57,7 @@
   transform: translateY(-8px) rotate(-45deg);
 }
 
-/* 4) nav-links dropdown */
+/* 6) Dropdown panel */
 .nav-links {
   position: absolute;
   top: 100%;
