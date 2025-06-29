@@ -34,7 +34,7 @@ export default function HumanFigure() {
 
     // 4) Lights
     scene.add(new THREE.HemisphereLight(0x888888, 0x444444, 0.6))
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.0)
+    const keyLight = new THREE.DirectionalLight(0x888888, 1.0)
     keyLight.position.set(5, 10, 7)
     scene.add(keyLight)
     const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
