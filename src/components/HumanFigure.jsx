@@ -52,7 +52,7 @@ export default function HumanFigure() {
         const box    = new THREE.Box3().setFromObject(model)
         const center = box.getCenter(new THREE.Vector3())
         model.position.sub(center)
-        model.scale.setScalar(0.5)  // tweak size here
+        model.scale.setScalar(1.2)  // tweak size here
 
         // traverse each mesh, hide it, and replace with point cloud
         model.traverse(child => {
