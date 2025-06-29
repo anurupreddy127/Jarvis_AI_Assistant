@@ -19,9 +19,9 @@
   --color-accent:       var(--color-primary);
 
   /* Frame */
-  --frame-thickness:    20px;   /* border width */
+  --frame-thickness:    20px;   /* width of the black border */
+  --frame-radius:       32px;   /* how rounded the *inside* corners are */
   --frame-color:        #000;   /* border color */
-  --frame-radius:       32px;   /* inner corner roundness */
 }
 
 /* ==========================================================================
@@ -39,10 +39,18 @@ html, body {
   height: 100%;
 }
 
+/* Paint the *outermost* background black */
+html {
+  background-color: var(--frame-color);
+}
+
+/* Inset the body by the “frame” thickness and round its inner corners */
 body {
-  font-family: 'Inter', sans-serif;
+  margin: var(--frame-thickness);
+  border-radius: var(--frame-radius);
   background-color: var(--color-bg-light);
   color: var(--color-text);
+  font-family: 'Inter', sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
 }
@@ -53,16 +61,13 @@ a {
 }
 
 /* ==========================================================================
-   SIMPLE BLACK FRAME WITH ROUNDED CORNERS
+   OPTIONAL: utility classes or global overrides below
    ========================================================================== */
-/* Single overlay pseudo-element on <html> */
-html::before {
-  content: "";
-  position: fixed;
-  inset: 0;                         /* top/right/bottom/left: 0 */
-  pointer-events: none;             /* allow clicks through it */
-  box-sizing: border-box;
-  border: var(--frame-thickness) solid var(--frame-color);
-  border-radius: var(--frame-radius);
-  z-index: 9999;                    /* above everything */
+
+/* Example: center a full-height hero */
+.hero {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
