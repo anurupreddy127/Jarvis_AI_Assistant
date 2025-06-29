@@ -25,7 +25,7 @@ export default function HumanFigure() {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     
     renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setClearColor(0x888888, 0)
+    renderer.setClearColor(0x000000, 0)
     mountRef.current.appendChild(renderer.domElement)
     
     // Store references
@@ -86,7 +86,7 @@ export default function HumanFigure() {
           
           // Create point material
           const pointMaterial = new THREE.PointsMaterial({
-            color: 0xffffff,
+            color: 0x888888,
             size: 0.02,
             sizeAttenuation: true
           })
