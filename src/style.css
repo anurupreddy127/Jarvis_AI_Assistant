@@ -1,5 +1,31 @@
 /* ==========================================================================
-   RESET & BASE STYLES (unchanged)
+   GLOBAL VARIABLES — palette + frame settings
+   ========================================================================== */
+:root {
+  /* Backgrounds */
+  --color-bg-dark:      #3C3744;
+  --color-bg-light:     #FBFFF1;
+
+  /* Primary blues */
+  --color-primary-dark: #090C9B;
+  --color-primary:      #3D52D5;
+  --color-primary-light:#B4C5E4;
+
+  /* Text */
+  --color-text:         var(--color-bg-dark);
+  --color-text-inverse: var(--color-bg-light);
+
+  /* Accent */
+  --color-accent:       var(--color-primary);
+
+  /* Frame */
+  --frame-thickness:    20px;   /* width of the black border */
+  --frame-radius:       32px;   /* how rounded the *inside* corners are */
+  --frame-color:        #000;   /* border color */
+}
+
+/* ==========================================================================
+   RESET & BASE STYLES
    ========================================================================== */
 *,
 *::before,
@@ -13,17 +39,8 @@ html, body {
   height: 100%;
 }
 
-/* ==========================================================================
-   GLOBAL LAYOUT & COLORS
-   ========================================================================== */
-/* Give html your normal page background */
-html {
-  background-color: var(--color-bg-light);
-}
-
 body {
-  margin: 0;                        /* reset any inset margin */
-  border-radius: 0;                 /* no body rounding */
+  margin: 0;                            /* ensure body fills edge-to-edge */
   background-color: var(--color-bg-light);
   color: var(--color-text);
   font-family: 'Audiowide', cursive;
@@ -31,23 +48,18 @@ body {
   overflow-x: hidden;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 /* ==========================================================================
    FIXED BLACK FRAME WITH ROUNDED INNER CORNERS
    ========================================================================== */
-html::before {
+body::before {
   content: "";
   position: fixed;
-  inset: 0;                         /* top/right/bottom/left: 0 */
-  pointer-events: none;             /* clicks pass through */
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;                /* allow clicks through */
   box-sizing: border-box;
   border: var(--frame-thickness) solid var(--frame-color);
   border-radius: var(--frame-radius);
-  z-index: 9999;                    /* always on top */
+  z-index: 9999;                       /* always on top */
 }
 
 /* ==========================================================================
