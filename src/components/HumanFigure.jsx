@@ -53,39 +53,51 @@ const spherePositions = sphereGeometry.getAttribute('position').array
 let headPositions = []
 let morphTargets = []
 
-model.traverse(child => {
-  if (child.isMesh) {
-    const positions = child.geometry.getAttribute('position')
-    const count = positions.count
 
-    headPositions.push(positions.array.slice()) // original shape
 
-    // Match sphere point count or pad/repeat
-    const sphere = new Float32Array(positions.count * 3)
-    for (let i = 0; i < positions.count; i++) {
-      const j = i * 3
-      const k = j % spherePositions.length
-      sphere[j]     = spherePositions[k]
-      sphere[j + 1] = spherePositions[k + 1]
-      sphere[j + 2] = spherePositions[k + 2]
-    }
+ // 3️⃣ point-cloud + prepare for morph
+  model.traverse(child => {
+    if (!child.isMesh) return
 
-    morphTargets.push(sphere)
+    // hide the original mesh
+    child.material.transparent = true
+    child.material.opacity     = 0
 
-    const material = new THREE.PointsMaterial({
-      color: 0x3C3744,
-      size: 0.015,
-      sizeAttenuation: true,
-    })
-
-    const points = new THREE.Points(child.geometry.clone(), material)
-    points.geometry.setAttribute('morphTarget', new THREE.BufferAttribute(sphere, 3))
-    child.visible = false // hide original mesh
+    // create Points exactly as before
+    const points = new THREE.Points(
+      child.geometry.clone(),
+      new THREE.PointsMaterial({ color: 0x3C3744, size: 0.01, sizeAttenuation: true })
+    )
+    // bake in the mesh’s world transform so the dots sit correctly
+    points.applyMatrix4(child.matrixWorld)
     model.add(points)
 
-    points.userData.original = positions.array.slice()
-  }
-})
+    // capture that transformed position buffer as our "head" shape
+    const posAttr = points.geometry.getAttribute('position')
+    const headArray = Float32Array.from(posAttr.array)
+
+    // compute sphere positions matching count
+    const sphereRadius = 2.5  // tweak to desired size
+    const sphereArray = new Float32Array(headArray.length)
+    for (let i = 0; i < headArray.length; i += 3) {
+      // normalize the head-point to lie on a sphere
+      const v = new THREE.Vector3(
+        headArray[i + 0],
+        headArray[i + 1],
+        headArray[i + 2]
+      ).normalize().multiplyScalar(sphereRadius)
+      sphereArray[i + 0] = v.x
+      sphereArray[i + 1] = v.y
+      sphereArray[i + 2] = v.z
+    }
+
+    // stash both arrays for morphing later
+    points.userData.headArray   = headArray
+    points.userData.sphereArray = sphereArray
+
+    // we'll animate the live position attribute in onUpdate()
+  })
+
 
 
         scene.add(model)
