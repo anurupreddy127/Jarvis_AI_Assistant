@@ -12,100 +12,118 @@ export default function HumanFigure() {
     const container = mountRef.current
     if (!container) return
 
-    // sizes
+    // 1) Sizes
     const W = container.clientWidth
     const H = container.clientHeight
 
-    // 1) Scene, camera, renderer
+    // 2) Scene, camera, renderer
     const scene    = new THREE.Scene()
-    const camera   = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
+    const camera   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000)
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
     renderer.setSize(W, H)
     renderer.setPixelRatio(window.devicePixelRatio)
     container.appendChild(renderer.domElement)
 
-    // 2) Controls
+    // 3) Orbit controls
     const controls = new OrbitControls(camera, renderer.domElement)
-    controls.enableDamping   = true
-    controls.dampingFactor   = 0.1
-    controls.enableZoom      = false
-    controls.enablePan       = false
-    controls.rotateSpeed     = 0.7
+    controls.enableDamping = true
+    controls.dampingFactor = 0.1
+    controls.enableZoom    = false
+    controls.enablePan     = false
+    controls.rotateSpeed   = 0.7
 
-    // 3) Lights
-    // Hemisphere for soft fill from all around
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6)
-    hemi.position.set(0, 20, 0)
-    scene.add(hemi)
-
-    // Key / Fill / Rim
+    // 4) Lights
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.0)
     keyLight.position.set(5, 10, 7)
     scene.add(keyLight)
-
     const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
     fillLight.position.set(-5, -5, 5)
     scene.add(fillLight)
-
     const rimLight = new THREE.DirectionalLight(0xffffff, 0.7)
     rimLight.position.set(-5, 10, -5)
     scene.add(rimLight)
 
-    // 4) Load the bust GLB
+    // 5) Load model
     new GLTFLoader().load(
       bustUrl,
       (gltf) => {
         const model = gltf.scene
 
-        // compute bbox + center
+        // center & scale
         const box    = new THREE.Box3().setFromObject(model)
         const size   = box.getSize(new THREE.Vector3())
         const center = box.getCenter(new THREE.Vector3())
-
-        // center model at origin
         model.position.sub(center)
-
-        // uniform scale = 2
         model.scale.setScalar(0.8)
-
         scene.add(model)
 
-        // frame camera: back far enough so height ~100% view
-        const scaledH = size.y * 2
-        camera.position.set(0, 0, scaledH * 0.6)
+        // frame camera
+        const scaledH = size.y * 0.8
+        camera.position.set(0, 0, scaledH * 1.5)
         camera.lookAt(0, 0, 0)
         camera.updateProjectionMatrix()
 
-        // replace mesh with point cloud
+        // 6) Replace meshes with gradient point-cloud
         model.traverse(child => {
           if (child.isMesh) {
+            // hide original mesh
             child.material.transparent = true
-            child.material.opacity = 0
+            child.material.opacity     = 0
 
+            // clone geometry so we can add color attribute
+            const geom = child.geometry.clone()
+            geom.computeBoundingBox()
+            const { min, max } = geom.boundingBox
+            const rangeY = max.y - min.y
+            const posAttr = geom.attributes.position
+            const count = posAttr.count
+
+            // build color array
+            const colors = new Float32Array(count * 3)
+            for (let i = 0; i < count; i++) {
+              const y = posAttr.getY(i)
+              const t = (y - min.y) / rangeY  // 0 at bottom, 1 at top
+              // lerp gray(0.5)→white(1.0)
+              const c = THREE.MathUtils.lerp(0.5, 1.0, t)
+              colors[3*i]   = c
+              colors[3*i+1] = c
+              colors[3*i+2] = c
+            }
+            geom.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+            // create PointsMaterial with vertexColors
             const pointsMat = new THREE.PointsMaterial({
-              color: 0xffffff,
+              vertexColors: true,
               size: 0.02,
               sizeAttenuation: true,
+              transparent: true,
+              opacity: 1.0
             })
-            const points = new THREE.Points(child.geometry, pointsMat)
-            points.applyMatrix4(child.matrix) // carry over position/rotation/scale
+
+            // build points
+            const points = new THREE.Points(geom, pointsMat)
+            // copy transform
+            points.position.copy(child.position)
+            points.rotation.copy(child.rotation)
+            points.scale.copy(child.scale)
             model.add(points)
           }
         })
 
-        // 5) Animation loop
-        const loop = () => {
-          requestAnimationFrame(loop)
+        // 7) Render loop
+        const animate = () => {
+          requestAnimationFrame(animate)
           controls.update()
           renderer.render(scene, camera)
         }
-        loop()
+        animate()
       },
       undefined,
       err => console.error('Failed to load bust GLB:', err)
     )
 
-    // 6) Cleanup
+    // cleanup
     return () => {
       renderer.dispose()
       container.removeChild(renderer.domElement)
