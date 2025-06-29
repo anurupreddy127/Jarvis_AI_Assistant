@@ -5,6 +5,7 @@ import Features from './components/Features'
 import Demo from './components/Demo'
 import Download from './components/Download'
 import Footer from './components/Footer'
+import About from './components/About'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Header />
       <main>
         <Hero />
+        <About />
         <Features />
         <Demo />
         <Download />
