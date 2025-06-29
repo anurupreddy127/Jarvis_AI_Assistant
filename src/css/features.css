@@ -25,7 +25,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
-  /* give extra bottom padding so cards have room to drift */
+  /* give extra bottom space so all cards have room to animate in */
   padding-bottom: 200px;
 }
 
@@ -34,7 +34,7 @@
   padding: 2rem;
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
 .feature-icon {
