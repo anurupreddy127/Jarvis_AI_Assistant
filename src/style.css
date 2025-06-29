@@ -1,31 +1,20 @@
 /* ==========================================================================
-   GLOBAL VARIABLES — palette + frame settings
+   GLOBAL VARIABLES
    ========================================================================== */
 :root {
-  /* Backgrounds */
-  --color-bg-dark:      #3C3744;
-  --color-bg-light:     #FBFFF1;
+  /* Frame settings */
+  --frame-color:        #000;    /* your black border */
+  --frame-thickness:    20px;    /* how thick the border is */
+  --frame-radius:       32px;    /* inner corner radius */
 
-  /* Primary blues */
-  --color-primary-dark: #090C9B;
-  --color-primary:      #3D52D5;
-  --color-primary-light:#B4C5E4;
-
-  /* Text */
-  --color-text:         var(--color-bg-dark);
-  --color-text-inverse: var(--color-bg-light);
-
-  /* Accent */
-  --color-accent:       var(--color-primary);
-
-  /* Frame */
-  --frame-thickness:    20px;   /* width of the black border */
-  --frame-radius:       32px;   /* how rounded the *inside* corners are */
-  --frame-color:        #000;   /* border color */
+  /* Page palette */
+  --color-bg-light:     #FBFFF1; /* the white inside */
+  --color-text:         #3C3744; /* dark text */
+  --color-accent:       #3D52D5; /* accent blue, etc */
 }
 
 /* ==========================================================================
-   RESET & BASE STYLES
+   RESET + BASIC LAYOUT
    ========================================================================== */
 *,
 *::before,
@@ -39,31 +28,40 @@ html, body {
   height: 100%;
 }
 
+html {
+  /* paint the very back black */
+  background-color: var(--frame-color);
+}
+
 body {
-  margin: 0;                            /* ensure body fills edge-to-edge */
-  background-color: var(--color-bg-light);
-  color: var(--color-text);
-  font-family: 'Audiowide', cursive;
-  line-height: 1.6;
+  /* transparent so html’s black shows around us */
+  background: transparent;
+  position: relative;
+  z-index: 1;           /* sit above our white “window” */
   overflow-x: hidden;
+  font-family: 'Audiowide', cursive;
+  color: var(--color-text);
+  line-height: 1.6;
 }
 
 /* ==========================================================================
-   FIXED BLACK FRAME WITH ROUNDED INNER CORNERS
+   WHITE “WINDOW” WITH ROUNDED CORNERS
    ========================================================================== */
-body::before {
+html::before {
   content: "";
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;                /* allow clicks through */
-  box-sizing: border-box;
-  border: var(--frame-thickness) solid var(--frame-color);
-  border-radius: var(--frame-radius);
-  z-index: 9999;                       /* always on top */
+  top:    var(--frame-thickness);
+  left:   var(--frame-thickness);
+  right:  var(--frame-thickness);
+  bottom: var(--frame-thickness);
+  background-color: var(--color-bg-light);
+  border-radius:    var(--frame-radius);
+  pointer-events:   none;
+  z-index:          0;
 }
 
 /* ==========================================================================
-   OPTIONAL: utility classes below
+   HERO UTILITY
    ========================================================================== */
 .hero {
   width: 100%;
