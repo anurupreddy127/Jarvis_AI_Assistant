@@ -66,7 +66,7 @@ export default function HumanFigure() {
         model.position.sub(center)
 
         // uniform scale = 2
-        model.scale.setScalar(1.5)
+        model.scale.setScalar(1.0)
 
         scene.add(model)
 
