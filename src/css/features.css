@@ -20,6 +20,7 @@
   display: block;
 }
 
+
 /* ensure the BrainFigure canvas fills */
 .features-background .brain-figure-container,
 .features-background canvas {
