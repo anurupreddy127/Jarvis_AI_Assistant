@@ -30,9 +30,7 @@ const Hero = () => {
   return (
     <section className="hero">
       {/* 1. Full-bleed 3D background canvas */}
-      <div className="hero-background">
-        <HumanFigure />
-      </div>
+      
 
       {/* 2. Your text & buttons on top */}
       <div className="hero-container">
