@@ -43,7 +43,7 @@ export default function BrainFigure() {
       const box = new THREE.Box3().setFromObject(model)
       const center = box.getCenter(new THREE.Vector3())
       model.position.sub(center)
-      model.scale.setScalar(0.8)
+      model.scale.setScalar(0.1)
 
       // for each mesh, replace with Points
       model.traverse(child => {
