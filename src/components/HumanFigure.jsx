@@ -143,7 +143,7 @@ points.userData.sphereArray = sphereArr
 
         // 5) ScrollTrigger slide Y
         gsap.to(model.position, {
-          y: -0.9,
+          y: -1.5,
           ease: 'none',
           scrollTrigger: {
             trigger: '.hero',
