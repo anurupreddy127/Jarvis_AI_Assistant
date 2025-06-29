@@ -51,7 +51,7 @@ export default function HumanFigure() {
         model.scale.setScalar(0.8)
 
         // prepare sphere template
-        const sphereRadius     = 2.5
+        const sphereRadius     = 2
         const sphereGeometry   = new THREE.SphereGeometry(sphereRadius, 64, 64)
         const spherePositions  = sphereGeometry.getAttribute('position').array
 
