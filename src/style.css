@@ -1,6 +1,33 @@
-/* css/style.css */
+/* ==========================================================================
+   GLOBAL VARIABLES — palette + frame knobs
+   ========================================================================== */
+:root {
+  /* Backgrounds */
+  --color-bg-dark:      #3C3744;
+  --color-bg-light:     #FBFFF1;
 
-/* 1) RESET & BOX-SIZING */
+  /* Primary blues */
+  --color-primary-dark: #090C9B;
+  --color-primary:      #3D52D5;
+  --color-primary-light:#B4C5E4;
+
+  /* Text */
+  --color-text:         var(--color-bg-dark);
+  --color-text-inverse: var(--color-bg-light);
+
+  /* Accent */
+  --color-accent:       var(--color-primary);
+
+  /* Frame notch settings */
+  --frame-thickness:    20px;  /* how thick the black bars are */
+  --notch-width:        80px;  /* total width of each center notch */
+  --notch-depth:        20px;  /* how deep that notch cuts in */
+  --frame-color:        #000;  /* frame color */
+}
+
+/* ==========================================================================
+   RESET + BASE STYLES
+   ========================================================================== */
 *,
 *::before,
 *::after {
@@ -9,26 +36,10 @@
   box-sizing: border-box;
 }
 
-/* 2) ROOT COLOR VARIABLES */
-:root {
-  /* Backgrounds */
-  --color-bg-dark:   #3C3744;  /* dark charcoal */
-  --color-bg-light:  #FBFFF1;  /* off-white */
-
-  /* Primary / brand blues */
-  --color-primary-dark:  #090C9B;  /* deep royal blue */
-  --color-primary:       #3D52D5;  /* mid-tone blue */
-  --color-primary-light:#B4C5E4;   /* pale blue */
-
-  /* Text */
-  --color-text:           var(--color-bg-dark);
-  --color-text-inverse:   var(--color-bg-light);
-
-  /* Accent (alias for primary) */
-  --color-accent:         var(--color-primary);
+html, body {
+  height: 100%;
 }
 
-/* 3) BASE TYPOGRAPHY & LAYOUT */
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--color-bg-light);
@@ -42,42 +53,11 @@ a {
   text-decoration: none;
 }
 
-/* create a fixed “frame” around the viewport */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; 
-  left: 0; 
-  right: 0; 
-  bottom: 0;
-  pointer-events: none;      /* so it never blocks clicks */
-  box-sizing: border-box;
-  border: 8px solid #000;    /* adjust thickness & color here */
-  border-radius: 12px;       /* rounded corners like your example */
-  z-index: 9999;             /* above everything else */
-}
+/* ==========================================================================
+   NOTCHED FRAME (4 pseudo-elements)
+   ========================================================================== */
 
-/* -------------------------------------------------------------------
-   GLOBAL VARIABLES — tweak these to change thickness / notch size
-------------------------------------------------------------------- */
-:root {
-  --frame-thickness: 20px;  /* width of your black frame */
-  --notch-width:     80px;  /* total width of the middle notch */
-  --notch-depth:     20px;  /* how deep the notch cuts in */
-  --frame-color:     #000;  /* frame color */
-}
-
-/* Make sure html/body fill the viewport */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-/* ---------------------------
-   TOP BORDER w/ middle notch
-   (html::before)
----------------------------- */
+/* ─ Top bar w/ middle downward notch ─ */
 html::before {
   content: "";
   position: fixed;
@@ -87,19 +67,17 @@ html::before {
   z-index: 9999;
   pointer-events: none;
   clip-path: polygon(
-    /* left straight edge */     0 0,
-    /* run to just before notch*/ calc(50% - var(--notch-width)/2) 0,
-    /* notch point */           50% var(--notch-depth),
-    /* back up to top edge */   calc(50% + var(--notch-width)/2) 0,
-    /* finish top edge */       100% 0,
-    /* carry around bottom of this band */ 100% 100%, 0 100%
+    0 0,
+    calc(50% - var(--notch-width)/2) 0,
+    50% var(--notch-depth),
+    calc(50% + var(--notch-width)/2) 0,
+    100% 0,
+    100% 100%, 
+    0 100%
   );
 }
 
-/* ---------------------------
-   BOTTOM BORDER w/ middle notch
-   (html::after)
----------------------------- */
+/* ─ Bottom bar w/ middle upward notch ─ */
 html::after {
   content: "";
   position: fixed;
@@ -109,19 +87,17 @@ html::after {
   z-index: 9999;
   pointer-events: none;
   clip-path: polygon(
-    /* start bottom-left */     0 100%,
-    /* run to just before notch */ calc(50% - var(--notch-width)/2) 100%,
-    /* notch point */           50% calc(100% - var(--notch-depth)),
-    /* back down to bottom edge */ calc(50% + var(--notch-width)/2) 100%,
-    /* finish bottom edge */    100% 100%,
-    /* carry around top of this band */ 100% 0, 0 0
+    0 100%,
+    calc(50% - var(--notch-width)/2) 100%,
+    50% calc(100% - var(--notch-depth)),
+    calc(50% + var(--notch-width)/2) 100%,
+    100% 100%,
+    100% 0, 
+    0 0
   );
 }
 
-/* ---------------------------
-   LEFT BORDER w/ middle notch
-   (body::before)
----------------------------- */
+/* ─ Left bar w/ right-facing notch ─ */
 body::before {
   content: "";
   position: fixed;
@@ -131,19 +107,17 @@ body::before {
   z-index: 9999;
   pointer-events: none;
   clip-path: polygon(
-    /* start top-left */        0 0,
-    /* run along top edge */    100% 0,
-    /* down to just above notch */ 100% calc(50% - var(--notch-width)/2),
-    /* notch point */           var(--notch-depth) 50%,
-    /* back up to side edge */  100% calc(50% + var(--notch-width)/2),
-    /* finish down left side */ 100% 100%, 0 100%
+    0 0,
+    100% 0,
+    100% calc(50% - var(--notch-width)/2),
+    var(--notch-depth) 50%,
+    100% calc(50% + var(--notch-width)/2),
+    100% 100%,
+    0 100%
   );
 }
 
-/* ---------------------------
-   RIGHT BORDER w/ middle notch
-   (body::after)
----------------------------- */
+/* ─ Right bar w/ left-facing notch ─ */
 body::after {
   content: "";
   position: fixed;
@@ -153,12 +127,12 @@ body::after {
   z-index: 9999;
   pointer-events: none;
   clip-path: polygon(
-    /* start top-right */       100% 0,
-    /* run along top edge */    0 0,
-    /* down to just above notch */ 0 calc(50% - var(--notch-width)/2),
-    /* notch point */           calc(100% - var(--notch-depth)) 50%,
-    /* back up to side edge */  0 calc(50% + var(--notch-width)/2),
-    /* finish down right side */0 100%, 100% 100%
+    100% 0,
+    0 0,
+    0 calc(50% - var(--notch-width)/2),
+    calc(100% - var(--notch-depth)) 50%,
+    0 calc(50% + var(--notch-width)/2),
+    0 100%,
+    100% 100%
   );
 }
-
