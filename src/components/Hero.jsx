@@ -34,7 +34,7 @@ const Hero = () => {
 
       {/* 2. Your text & buttons on top */}
       <div className="hero-container">
-        <HumanFigure />
+        
         <div className="hero-content">
           <div className="hero-text">
             <h1 className="hero-title" ref={titleRef}>
@@ -61,10 +61,11 @@ const Hero = () => {
             </div>
           </div>
         </div>
+        <HumanFigure />
       </div>
-      <div className="hero-background">
+      {/* <div className="hero-background">
         
-      </div>
+      </div> */}
     </section>
   )
 }
