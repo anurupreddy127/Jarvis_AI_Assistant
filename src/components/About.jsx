@@ -8,8 +8,7 @@ export default function About() {
         <h2 className="about-title">What is Jarvis?</h2>
         <p className="about-text">
           Jarvis is an AI-powered Chrome extension that transforms your voice commands into 
-          instant, seamless navigation—leveraging cutting-edge neural processing directly 
-          in your browser. Think of it as your personal voice co-pilot for the web.
+          instant, seamless navigation directly in your browser. Think of it as your personal voice co-pilot for the web.
         </p>
       </div>
     </section>
