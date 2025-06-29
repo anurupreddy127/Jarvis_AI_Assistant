@@ -42,7 +42,7 @@
   margin: 0;
   color: var(--accent-blue);
   font-size: 15rem;
-  opacity: 0.1;
+  opacity: 0.15;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-shadow: 0 0 20px var(--accent-light);
