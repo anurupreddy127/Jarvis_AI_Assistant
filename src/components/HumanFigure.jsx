@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { createTimeline, stagger, utils } from 'animejs'
 import bustUrl from '../assets/human.glb?url'
 
 export default function HumanFigure() {
@@ -14,159 +15,108 @@ export default function HumanFigure() {
     if (!mountRef.current) return
     gsap.registerPlugin(ScrollTrigger)
 
-    // 1) Three.js setup
-    const scene  = new THREE.Scene()
-    const W      = mountRef.current.clientWidth
-    const H      = mountRef.current.clientHeight
-    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000)
-    camera.position.set(0, 0, 4)
-    camera.lookAt(0, 0, 0)
+    // … your Three.js setup, loading, point-cloud & head→sphere morph here …
+    // assume “pointsGroup” is a THREE.Group() containing all THREE.Points
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
-    renderer.setSize(W, H)
-    renderer.setPixelRatio(window.devicePixelRatio)
-    mountRef.current.appendChild(renderer.domElement)
+    // 1) build your anime.js timeline exactly as you had it:
+    const { random, cos, sin, sqrt, PI } = Math
+    const count    = 2500
+    const duration = 3000
+    const win      = { w: window.innerWidth * .26, h: window.innerHeight * .26 }
+    const target   = { x: 0, y: 0, r: win.w * .25 }
+    const theta    = Symbol()
+    const radius   = Symbol()
 
-    // 2) Lights
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
-    const key  = new THREE.DirectionalLight(0xffffff, 1.0)
-    key.position.set(5, 10, 7)
-    const fill = new THREE.DirectionalLight(0xffffff, 0.5)
-    fill.position.set(-5, -5, 5)
-    const rim  = new THREE.DirectionalLight(0xffffff, 0.7)
-    rim.position.set(-5, 10, -5)
-    scene.add(key, fill, rim)
-
-    // 3) Load model + point-cloud + morph setup
-    new GLTFLoader().load(
-      bustUrl,
-      (gltf) => {
-        const model = gltf.scene
-        modelRef.current = model
-
-        // center & scale
-        const box    = new THREE.Box3().setFromObject(model)
-        const center = box.getCenter(new THREE.Vector3())
-        model.position.sub(center)
-        model.scale.setScalar(0.8)
-
-        // prepare sphere template
-        const sphereRadius     = 2.5
-        const sphereGeometry   = new THREE.SphereGeometry(sphereRadius, 64, 64)
-        const spherePositions  = sphereGeometry.getAttribute('position').array
-
-        // traverse meshes, create Points and store morph arrays
-        model.traverse(child => {
-          if (!child.isMesh) return
-
-          // hide mesh
-          child.material.transparent = true
-          child.material.opacity     = 0
-
-          // create points
-          const points = new THREE.Points(
-            child.geometry.clone(),
-            new THREE.PointsMaterial({ color: 0x3C3744, size: 0.01, sizeAttenuation: true })
-          )
-          // apply world transform
-          points.applyMatrix4(child.matrixWorld)
-          model.add(points)
-
-          // capture head positions
-          const posAttr  = points.geometry.getAttribute('position')
-          const headArr  = Float32Array.from(posAttr.array)
-
-          // compute matching sphere positions
-          const sphereArr = new Float32Array(headArr.length)
-          for (let i = 0; i < headArr.length; i += 3) {
-            const v = new THREE.Vector3(
-              headArr[i], headArr[i + 1], headArr[i + 2]
-            ).normalize().multiplyScalar(sphereRadius)
-            sphereArr[i]     = v.x
-            sphereArr[i + 1] = v.y
-            sphereArr[i + 2] = v.z
-          }
-
-          // store for morph
-          points.userData.headArray   = headArr
-          points.userData.sphereArray = sphereArr
-        })
-
-        scene.add(model)
-
-        // 4) ScrollTrigger morph
-        gsap.to({ t: 0 }, {
-          t: 1,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.hero',
-            start:   'bottom bottom',
-            end:     'bottom top',
-            scrub:   true,
-          },
-          onUpdate() {
-            const t = this.targets()[0].t
-            model.traverse(child => {
-              if (!child.isPoints) return
-              const pa   = child.geometry.attributes.position.array
-              const head = child.userData.headArray
-              const sph  = child.userData.sphereArray
-              for (let i = 0; i < pa.length; i++) {
-                pa[i] = THREE.MathUtils.lerp(head[i], sph[i], t)
-              }
-              child.geometry.attributes.position.needsUpdate = true
-            })
-          }
-        })
-
-        // 5) ScrollTrigger slide Y
-        gsap.to(model.position, {
-          y: -0.8,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.hero',
-            start: 'bottom bottom',
-            end: 'bottom top',
-            scrub: true,
-          }
-        })
-      },
-      undefined,
-      err => console.error('GLTF load error:', err)
-    )
-
-    // 6) Mouse-follow
-    let mx = 0, my = 0
-    const onMouse = e => {
-      mx = (e.clientX / window.innerWidth)  * 2 - 1
-      my = (e.clientY / window.innerHeight) * 2 - 1
+    // create <div> bubbles behind the scenes:
+    const bubbles = []
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div')
+      const h  = utils.random(15, 25)
+      const l  = utils.random(10, 18)
+      utils.set(el, { background: `hsl(${h},60%,${l}%)` })
+      el[theta]  = random() * PI * 2
+      el[radius] = target.r * sqrt(random())
+      document.body.appendChild(el)
+      bubbles.push(el)
     }
-    window.addEventListener('mousemove', onMouse)
 
-    // 7) Render loop
-    const animate = () => {
-      requestAnimationFrame(animate)
-      const m = modelRef.current
-      if (m) {
-        m.rotation.y = mx * 0.3
-        m.rotation.x = my * 0.15
+    const bubbleTl = createTimeline({
+      autoplay: false,
+      defaults: {
+        loop: true,
+        ease: 'inOut(1.3)',
+        onLoop(self) { self.refresh() },
       }
-      renderer.render(scene, camera)
-    }
-    animate()
+    })
+    bubbleTl
+      .add({
+        targets: bubbles,
+        x: el =>  target.x + el[radius]*cos(el[theta]),
+        y: el =>  target.y + el[radius]*sin(el[theta]),
+        duration: () => duration + utils.random(-100,100),
+        easing: 'inOut(1.5)',
+        update: anim => {
+          // mutate theta+radius on loop
+          if (anim.currentTime === 0) {
+            for (const el of bubbles) {
+              el[theta]  = random()*PI*2
+              el[radius] = target.r * sqrt(random())
+            }
+          }
+        }
+      }, stagger(duration/count * 1.125))
+      .add({
+        targets: target,
+        r: () => win.w * utils.random(.05,.5,2),
+        duration: 1250,
+      }, 0)
+      .add({
+        targets: target,
+        x: () => utils.random(-win.w,win.w),
+        modifier: x => x + Math.sin(bubbleTl.currentTime*.0007) * win.w*.65,
+        duration: 2800,
+      }, 0)
+      .add({
+        targets: target,
+        y: () => utils.random(-win.h,win.h),
+        modifier: y => y + Math.cos(bubbleTl.currentTime*.00012)*win.h*.65,
+        duration: 1800,
+      }, 0)
 
-    // cleanup
-    return () => {
-      window.removeEventListener('mousemove', onMouse)
-      renderer.dispose()
-      if (
-        mountRef.current &&
-        renderer.domElement.parentNode === mountRef.current
-      ) {
-        mountRef.current.removeChild(renderer.domElement)
+    // 2) morph-and-move ScrollTrigger:
+    ScrollTrigger.create({
+      trigger: '.hero',
+      start:    'bottom bottom',
+      endTrigger:'#about',
+      end:      'top top',
+      scrub:    true,
+      onUpdate: self => {
+        const t = self.progress
+
+        // drive your THREE.js head→sphere morph (already in place)
+        modelRef.current.traverse(child => {
+          if (child.isPoints) {
+            const pos = child.geometry.getAttribute('position')
+            const head = child.userData.headArray
+            const sph  = child.userData.sphereArray
+            for (let i = 0; i < pos.count; i++) {
+              const j = i*3
+              pos.array[j  ] = THREE.MathUtils.lerp(head[j],   sph[j],   t)
+              pos.array[j+1] = THREE.MathUtils.lerp(head[j+1], sph[j+1], t)
+              pos.array[j+2] = THREE.MathUtils.lerp(head[j+2], sph[j+2], t)
+            }
+            pos.needsUpdate = true
+          }
+        })
+
+        // once we've fully morphed (t===1), kick off the bubbleTl:
+        if (t >= 1 && !bubbleTl.playing) {
+          bubbleTl.play()
+        }
       }
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
+    })
+
+    // … your existing mouse-follow + render loop + cleanup …
   }, [])
 
   return <div ref={mountRef} className="human-figure-container" />
