@@ -103,8 +103,14 @@ export default function HumanFigure() {
     // cleanup
     return () => {
       window.removeEventListener('mousemove', onMouse)
-      renderer.dispose()
-      mountRef.current.removeChild(renderer.domElement)
+     renderer.dispose()
+     // only remove the canvas if it's still mounted
+     if (
+       mountRef.current && 
+       renderer.domElement.parentNode === mountRef.current
+     ) {
+       mountRef.current.removeChild(renderer.domElement)
+     }
       ScrollTrigger.kill()  // optional cleanup
     }
   }, [])
