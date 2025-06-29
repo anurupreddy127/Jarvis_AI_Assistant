@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section className="hero">
       {/* full-screen 3D canvas */}
-      <div className="hero-canvas">
+      <div className="hero-background hero-canvas">
         <HumanFigure />
       </div>
 
