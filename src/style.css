@@ -1,20 +1,18 @@
-/* ==========================================================================
-   GLOBAL VARIABLES — palette + frame settings
-   ========================================================================== */
+/* ------------------------
+   1) YOUR VARIABLES
+   ------------------------ */
 :root {
-  /* Frame */
-  --frame-thickness: 20px;   /* how thick the black border is */
-  --frame-radius:    32px;   /* how rounded the *inside* corners are */
-  --frame-color:     #000;   /* border color */
+  --frame-thickness: 20px;   /* how “thick” your black band is */
+  --frame-radius:    32px;   /* the radius of those inner corners */
+  --frame-color:     #000;   /* black */
 
-  /* Your page background / text colors */
   --color-bg-light:  #FBFFF1;
   --color-text:      #3C3744;
 }
 
-/* ==========================================================================
-   RESET & BASE STYLES
-   ========================================================================== */
+/* ------------------------
+   2) RESET + BASE
+   ------------------------ */
 *,
 *::before,
 *::after {
@@ -22,88 +20,45 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 html, body {
   height: 100%;
 }
 
-/* 1) Make sure html fills and is your “frame” */
+/* ------------------------
+   3) THE OUTER “FRAME”
+   html is your black border
+   ------------------------ */
 html {
-  height: 100%;
-  background-color: var(--frame-color);  /* your black */
-  border-radius: var(--frame-radius);    /* round its corners */
-  overflow: hidden;                       /* clip all children */
+  background: var(--frame-color);
+  border-radius: var(--frame-radius);
+  overflow: hidden;
 }
 
-/* 2) Let body scroll *inside* that frame */
+/* ------------------------
+   4) THE INSET PAGE
+   body lives inside that
+   ------------------------ */
 body {
-  margin: 0;                              /* no extra insets */
-  height: calc(100% - 0px);               /* full height under html */
-  overflow-y: auto;                       /* vertical scroll only */
-  background-color: var(--color-bg-light);
+  /* inset everything by the frame thickness */
+  margin: var(--frame-thickness);
+
+  /* now give the body its own rounded corners */
+  border-radius: calc(var(--frame-radius) - var(--frame-thickness));
+
+  /* body fills the interior and scrolls */
+  height: calc(100% - (var(--frame-thickness) * 2));
+  overflow-y: auto;
+
+  background: var(--color-bg-light);
   color: var(--color-text);
   font-family: 'Audiowide', cursive;
   line-height: 1.6;
 }
 
-/* ==========================================================================
-   SIMPLE FOUR-SIDED FRAME (no notches)
-   ========================================================================== */
-/* top bar */
-html::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--frame-thickness);
-  background: var(--frame-color);
-  border-top-left-radius: var(--frame-radius);
-  border-top-right-radius: var(--frame-radius);
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* bottom bar */
-html::after {
-  content: "";
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: var(--frame-thickness);
-  background: var(--frame-color);
-  border-bottom-left-radius: var(--frame-radius);
-  border-bottom-right-radius: var(--frame-radius);
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* left bar */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; bottom: 0; left: 0;
-  width: var(--frame-thickness);
-  background: var(--frame-color);
-  border-top-left-radius: var(--frame-radius);
-  border-bottom-left-radius: var(--frame-radius);
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* right bar */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0; bottom: 0; right: 0;
-  width: var(--frame-thickness);
-  background: var(--frame-color);
-  border-top-right-radius: var(--frame-radius);
-  border-bottom-right-radius: var(--frame-radius);
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* ==========================================================================
-   ENSURE FULL-SCREEN SECTIONS SIT INSIDE FRAME
-   ========================================================================== */
+/* ------------------------
+   5) FULL–SCREEN SECTIONS
+   keep them inside the frame
+   ------------------------ */
 section {
   width: 100%;
   min-height: calc(100vh - (var(--frame-thickness) * 2));
