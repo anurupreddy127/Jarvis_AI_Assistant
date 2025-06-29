@@ -2,105 +2,94 @@
 import React, { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js'
 import brainUrl from '../assets/brain.glb?url'
 
 export default function BrainFigure() {
   const mountRef = useRef(null)
 
   useEffect(() => {
-    if (!mountRef.current) return
+    const container = mountRef.current
+    if (!container) return
 
-    // scene + camera + renderer
+    // — Scene, camera, renderer
     const scene    = new THREE.Scene()
-    const { clientWidth: W, clientHeight: H } = mountRef.current
+    const W        = container.clientWidth
+    const H        = container.clientHeight
     const camera   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000)
-    camera.position.set(0, 0, 6)   // pulled back a bit
+    camera.position.set(0, 0, 4)
     camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
     renderer.setSize(W, H)
     renderer.setPixelRatio(window.devicePixelRatio)
-    mountRef.current.appendChild(renderer.domElement)
+    container.appendChild(renderer.domElement)
 
-    // lighting
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6))
-    const dir = new THREE.DirectionalLight(0xffffff, 1)
+    // — Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6))                 // soft overall light
+    const dir = new THREE.DirectionalLight(0xffffff, 1.0)           // key light
     dir.position.set(5, 10, 7)
     scene.add(dir)
 
-    // load brain GLB
+    // — Load GLB
     new GLTFLoader().load(
       brainUrl,
       (gltf) => {
-let mesh = null
-gltf.scene.traverse(obj => {
-  if (obj.isMesh && !mesh) mesh = obj
-})
-
-if (!mesh) {
-  console.error('No mesh found in brain.glb!')
-  return
-}
-
-
-        // center + scale the raw mesh (we use only its geometry for sampling)
-        const box    = new THREE.Box3().setFromObject(mesh)
+        // center & scale the entire gltf.scene
+        const root = gltf.scene
+        const box  = new THREE.Box3().setFromObject(root)
         const center = box.getCenter(new THREE.Vector3())
-        mesh.position.sub(center)
-        mesh.scale.setScalar(0.8)
+        root.position.sub(center)
+        root.scale.setScalar(0.8)   // tweak global brain size here
 
-        // prepare sampler over the **surface** of your mesh
-        const sampler = new MeshSurfaceSampler(mesh)
-          .setWeightAttribute(null)
-          .build()
+        // convert each mesh → points
+        root.traverse(child => {
+          if (!child.isMesh) return
 
-        const POINT_COUNT = 5000  // ← bump this up/down for density
-        const positions  = new Float32Array(POINT_COUNT * 3)
-        const tempPos    = new THREE.Vector3()
-        const tempNorm   = new THREE.Vector3()
+          // optionally hide the original mesh
+          child.visible = false
 
-        for (let i = 0; i < POINT_COUNT; i++) {
-          sampler.sample(tempPos, tempNorm)
-          positions[3*i]     = tempPos.x
-          positions[3*i + 1] = tempPos.y
-          positions[3*i + 2] = tempPos.z
-        }
+          // clone geometry and bake in world matrix
+          const geo = child.geometry.clone().applyMatrix4(child.matrixWorld)
 
-        // build the Points cloud
-        const geometry = new THREE.BufferGeometry()
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+          // pick your dot color & size
+          const mat = new THREE.PointsMaterial({
+            color: 0x3D52D5,      // brain-blue
+            size: 0.015,          // dot size in world units
+            sizeAttenuation: true
+          })
 
-        const material = new THREE.PointsMaterial({
-          color: 0x3D52D5,
-          size: 0.02,
-          sizeAttenuation: true,
-          transparent: true,
-          opacity: 0.9
+          // build the Points cloud
+          const points = new THREE.Points(geo, mat)
+          scene.add(points)
         })
 
-        const points = new THREE.Points(geometry, material)
-        scene.add(points)
+        // now add the (hidden) root so any children transforms apply, if needed:
+        scene.add(root)
       },
       undefined,
       err => console.error('Brain load error:', err)
     )
 
-    // render loop
-    const loop = () => {
-      requestAnimationFrame(loop)
+    // — Render loop
+    const animate = () => {
+      requestAnimationFrame(animate)
       renderer.render(scene, camera)
     }
-    loop()
+    animate()
 
-    // cleanup
+    // — Cleanup
     return () => {
       renderer.dispose()
-      if (mountRef.current.contains(renderer.domElement)) {
-        mountRef.current.removeChild(renderer.domElement)
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement)
       }
     }
   }, [])
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
+  return (
+    <div
+      ref={mountRef}
+      style={{ width: '100%', height: '100vh', position: 'relative' }}
+    />
+  )
 }
