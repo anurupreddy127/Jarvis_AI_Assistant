@@ -8,36 +8,29 @@ export default function SubscribePage() {
     fetch("http://localhost:5000/api/offerings")
       .then(res => res.json())
       .then(data => {
-        console.log("Received offering data:", data);
-
-        // Find current offering (usually identifier = 'default')
-        const currentOffering = data.offerings?.find(o => o.identifier === 'default' && o.is_current);
-        if (currentOffering?.packages?.length > 0) {
-          setPackages(currentOffering.packages);
-        } else {
-          setPackages([]);
-        }
-
+        console.log("Received packages:", data);
+        setPackages(data.packages || []);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Error loading offerings:", err);
+        console.error("Error loading packages:", err);
         setLoading(false);
       });
   }, []);
 
   return (
-    <section style={{ minHeight: '100vh', background: '#111', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <section style={{ minHeight: '100vh', background: '#111', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
       <h2>Available Plans</h2>
       {loading ? (
         <p>Loading...</p>
       ) : packages.length > 0 ? (
         packages.map((pkg) => (
-          <div key={pkg.identifier} style={{ marginTop: '1rem', border: '1px solid #fff', padding: '1rem', width: '300px', textAlign: 'center' }}>
-            <p><strong>{pkg.identifier}</strong></p>
-            <p>{pkg.product?.name || 'Unnamed Product'}</p>
-            <p>{pkg.product?.price_string || 'Price not available'}</p>
-            <button style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>Subscribe</button>
+          <div key={pkg.id} style={{ marginTop: '1rem', border: '1px solid #fff', borderRadius: '8px', padding: '1rem', width: '300px', textAlign: 'center' }}>
+            <p><strong>{pkg.display_name}</strong></p>
+            <p>Lookup Key: {pkg.lookup_key}</p>
+            <button style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>
+              Subscribe
+            </button>
           </div>
         ))
       ) : (
