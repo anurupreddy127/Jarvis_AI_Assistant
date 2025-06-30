@@ -88,7 +88,6 @@ export default function VoiceSphere() {
         color: 'white',
         fontSize: '2rem',
         zIndex: 10,
-        fontFamily: 'Audiowide'
       }}>
         Explore ElevenLabs Voices
       </h1>
