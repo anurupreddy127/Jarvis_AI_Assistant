@@ -1,4 +1,6 @@
+// src/App.jsx
 import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import About from './components/About'
@@ -6,10 +8,11 @@ import Features from './components/Features'
 import VoiceSphere from './components/Voices'
 import Demo from './components/Demo'
 import DownloadSection from './components/DownloadSection'
+import SubscriptionPage from './components/SubscriptionPage' // create this file
 
-function App() {
+function HomePage() {
   return (
-    <div className="App">
+    <>
       <Header />
       <main>
         <Hero />
@@ -19,8 +22,18 @@ function App() {
         <Demo />
         <DownloadSection />
       </main>
+    </>
+  )
+}
 
-    </div>
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/subscriptions" element={<SubscriptionPage />} />
+      </Routes>
+    </Router>
   )
 }
 
