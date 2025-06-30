@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 
-export default function Voices() {
+export default function VoiceSphere() {
   const mountRef = useRef()
   const [voices, setVoices] = useState([])
   const audioMap = useRef({})
@@ -13,74 +13,81 @@ export default function Voices() {
       console.error("Missing ElevenLabs API key (VITE_ELEVENLABS_KEY)")
       return
     }
+
+    // 1) fetch the voice list
     fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': apiKey }
     })
-    .then(res => res.json())
-    .then(data => {
-      const list = data.voices.slice(0, 20)
-      setVoices(list)
-      list.forEach(v => {
-        const a = new Audio(v.sampleUrl)
-        a.load()
-        audioMap.current[v.id] = a
+      .then(res => res.json())
+      .then(data => {
+        const list = data.voices.slice(0, 20)  // grab up to 20 voices
+        setVoices(list)
+        list.forEach(v => {
+          const audio = new Audio(v.sampleUrl)
+          audio.load()
+          audioMap.current[v.id] = audio
+        })
       })
-    })
+      .catch(err => console.error('ElevenLabs fetch failed:', err))
   }, [])
 
   useEffect(() => {
     if (!mountRef.current || voices.length === 0) return
 
-    // Scene + camera + renderer
+    // 2) set up three.js scene, camera, renderer
     const width  = mountRef.current.clientWidth
     const height = mountRef.current.clientHeight
     const scene  = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(50, width/height, 0.1, 100)
+
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100)
     camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
     renderer.setSize(width, height)
+    renderer.setPixelRatio(window.devicePixelRatio)
     mountRef.current.appendChild(renderer.domElement)
 
-    // Build the sphere of text‐sprites
-    const group  = new THREE.Group()
-    const R      = 3               // sphere radius
+    // 3) build a group of text‐sprites on a sphere
+    const group       = new THREE.Group()
+    const R           = 3             // sphere radius
     const FONT_SIZE   = 8
     const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
-    const SPRITE_SCALE = 25         // tweak to enlarge/shrink labels
+    const SPRITE_SCALE = 25           // tweak to scale labels down/up
 
     voices.forEach((v, i) => {
-const dpr    = window.devicePixelRatio || 1
+      // 3a) compute spherical coords
+      const phi   = Math.acos(1 - 2 * (i + 0.5) / voices.length)
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i
+      const x     = Math.sin(phi) * Math.cos(theta) * R
+      const y     = Math.sin(phi) * Math.sin(theta) * R
+      const z     = Math.cos(phi) * R
+
+      // 3b) Hi-DPI canvas text
+      const dpr    = window.devicePixelRatio || 1
       const canvas = document.createElement('canvas')
       const ctx    = canvas.getContext('2d')
-
-      // measure in CSS pixels first
       ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
-      const metrics = ctx.measureText(v.name)
-      const textWidth  = Math.ceil(metrics.width)
-      const textHeight = Math.ceil(FONT_SIZE * 1.2)
+      const metrics   = ctx.measureText(v.name)
+      const textWidth = Math.ceil(metrics.width)
+      const textHeight= Math.ceil(FONT_SIZE * 1.2)
 
-      // size the canvas in *device* pixels…
       canvas.width  = textWidth  * dpr
       canvas.height = textHeight * dpr
-      // …but scale the drawing context back to CSS size
       ctx.scale(dpr, dpr)
       ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
       ctx.fillStyle = '#3C3744'
       ctx.fillText(v.name, 0, FONT_SIZE * 0.9)
 
-      // create a CanvasTexture and force linear filtering
-      const texture = new THREE.CanvasTexture(canvas)
+      // 3c) make sprite
+      const texture  = new THREE.CanvasTexture(canvas)
       texture.minFilter = THREE.LinearFilter
       texture.magFilter = THREE.LinearFilter
       const material = new THREE.SpriteMaterial({ map: texture, transparent: true })
-      const sprite = new THREE.Sprite(material)
+      const sprite   = new THREE.Sprite(material)
+
       sprite.position.set(x, y, z)
-      sprite.scale.set(
-        textWidth / SPRITE_SCALE,
-        FONT_SIZE / SPRITE_SCALE,
-        1
-      )
+      sprite.scale.set(textWidth / SPRITE_SCALE, FONT_SIZE / SPRITE_SCALE, 1)
       sprite.userData = { voiceId: v.id }
       group.add(sprite)
     })
@@ -91,7 +98,7 @@ const dpr    = window.devicePixelRatio || 1
     dir.position.set(5, 5, 5)
     scene.add(dir)
 
-    // raycaster for hover‐play
+    // 4) raycaster + mouse
     const raycaster = new THREE.Raycaster()
     const mouse     = new THREE.Vector2()
     function onPointerMove(e) {
@@ -100,40 +107,32 @@ const dpr    = window.devicePixelRatio || 1
     }
     window.addEventListener('pointermove', onPointerMove)
 
-    // animation loop
-const animate = () => {
-  requestAnimationFrame(animate)
+    // 5) render loop
+    function animate() {
+      requestAnimationFrame(animate)
+      group.rotation.y += 0.001
 
-  // slowly rotate the sphere
-  group.rotation.y += 0.001
+      raycaster.setFromCamera(mouse, camera)
+      const hits = raycaster.intersectObjects(group.children)
 
-  // raycast to see if any sprite is under the cursor
-  raycaster.setFromCamera(mouse, camera)
-  const hits = raycaster.intersectObjects(group.children)
+      group.children.forEach(sprite => {
+        const hit = hits[0]?.object === sprite
+        const audio = audioMap.current[sprite.userData.voiceId]
+        if (hit) {
+          if (audio?.paused) audio.play()
+        } else {
+          if (audio) {
+            audio.pause()
+            audio.currentTime = 0
+          }
+        }
+      })
 
-  group.children.forEach(sprite => {
-    const isHovered = hits.length && hits[0].object === sprite
-    const audio     = audioMap.current[sprite.userData.voiceId]
-
-    if (isHovered) {
-      // if it’s hovered and not already playing, start it
-      if (audio && audio.paused) audio.play()
-    } else {
-      // otherwise reset it
-      if (audio) {
-        audio.pause()
-        audio.currentTime = 0
-      }
+      renderer.render(scene, camera)
     }
-  })
-
-  renderer.render(scene, camera)
-}
-animate()
-
     animate()
 
-    // cleanup
+    // 6) cleanup
     return () => {
       window.removeEventListener('pointermove', onPointerMove)
       renderer.dispose()
@@ -143,5 +142,5 @@ animate()
     }
   }, [voices])
 
-  return <div ref={mountRef} style={{ width:'100%', height:'100vh' }} />
+  return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />
 }
