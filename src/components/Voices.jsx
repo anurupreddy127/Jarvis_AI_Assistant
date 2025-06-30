@@ -10,7 +10,7 @@ export default function Voices() {
   const audioMap = useRef({})
 
   useEffect(() => {
-      const apiKey = import.meta.env.VITE_ELEVEN_LABS_KEY
+      const apiKey = import.meta.env.VITE_ELEVENLABS_KEY
     if (!apiKey) {
       console.error("Missing ElevenLabs API key (VITE_ELEVEN_LABS_KEY)")
       return
