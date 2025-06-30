@@ -5,6 +5,7 @@ import About from './components/About'
 import Features from './components/Features'
 import VoiceSphere from './components/Voices'
 import Demo from './components/Demo'
+import DownloadSection from '../components/DownloadSection'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Features />
         <VoiceSphere />
         <Demo />
+        <DownloadSection />
       </main>
 
     </div>
