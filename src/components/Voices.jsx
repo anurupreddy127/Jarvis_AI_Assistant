@@ -48,50 +48,47 @@ export default function Voices() {
     // 3) create group of text‐sprites on a sphere
     const group = new THREE.Group()
     const radius = 3
-    voices.forEach((v, i) => {
-      // position by golden‐angle spherical distribution
-      const phi = Math.acos(1 - 2*(i+0.5)/voices.length)
-      const theta = Math.PI * (1 + Math.sqrt(5)) * i
-      const x = Math.sin(phi)*Math.cos(theta)*radius
-      const y = Math.sin(phi)*Math.sin(theta)*radius
-      const z = Math.cos(phi)*radius
+// … in your Voices component …
 
-const FONT_SIZE = 48     // <-- bump this up to taste
-const FONT_FAMILY = 'Audiowide'
+voices.forEach((v,i) => {
+  // … compute x,y,z …
+  const FONT_SIZE   = 48
+  const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
 
-const canvas = document.createElement('canvas')
-const ctx    = canvas.getContext('2d')
+  // 1) draw into canvas
+  const canvas = document.createElement('canvas')
+  const ctx    = canvas.getContext('2d')
+  ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
 
-// set your new font
-ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`
+  // measure & resize
+  const metrics   = ctx.measureText(v.name)
+  const textWidth = Math.ceil(metrics.width)
+  canvas.width    = textWidth
+  canvas.height   = Math.ceil(FONT_SIZE * 1.2)
 
-// measure & size canvas
-const metrics = ctx.measureText(v.name)
-const textWidth = Math.ceil(metrics.width)
-canvas.width  = textWidth
-canvas.height = FONT_SIZE * 1.2   // give a little vertical padding
+  // redraw text
+  ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+  ctx.fillStyle = '#3C3744'
+  ctx.fillText(v.name, 0, FONT_SIZE * 0.9)
 
-// redraw with the same settings
-ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
-ctx.fillStyle = '#3C3744'
-ctx.fillText(v.name, 0, FONT_SIZE * 0.9) // baseline near bottom
+  // 2) make sprite
+  const tex    = new THREE.CanvasTexture(canvas)
+  const mat    = new THREE.SpriteMaterial({ map: tex, transparent: true })
+  const sprite = new THREE.Sprite(mat)
 
+  // 3) scale in world‐space
+  const SPRITE_SCALE = 30
+  sprite.scale.set(
+    textWidth  / SPRITE_SCALE,
+    FONT_SIZE  / SPRITE_SCALE,
+    1
+  )
 
-     const tex = new THREE.CanvasTexture(canvas)
-      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true })
-      const sprite = new THREE.Sprite(mat)
+  sprite.position.set(x, y, z)
+  sprite.userData    = { voiceId: v.id }
+  group.add(sprite)
+})
 
-      // choose a scale factor to taste (smaller → sprite appears larger)
-      const SPRITE_SCALE = 30
-      sprite.scale.set(
-        textWidth  / SPRITE_SCALE,
-        FONT_SIZE  / SPRITE_SCALE,
-        1
-      )
-      sprite.position.set(x, y, z)
-      sprite.userData = { voiceId: v.id }
-      group.add(sprite)
-    })
     scene.add(group)
 
     // 4) lights + controls (optional)
