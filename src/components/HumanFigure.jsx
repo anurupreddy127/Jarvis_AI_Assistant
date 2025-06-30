@@ -147,7 +147,8 @@ points.userData.sphereArray = sphereArr
           scrollTrigger: {
             trigger: '.hero',
             start: 'bottom bottom',
-            end: 'bottom top',
+            endTrigger: '#voices',
+            end: 'top top',
             scrub: true,
           }
         })
