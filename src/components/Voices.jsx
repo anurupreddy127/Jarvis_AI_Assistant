@@ -61,7 +61,7 @@ export default function Voices() {
             }}
             style={{
               ...styles.voiceItem,
-              fontWeight: v.voice_id === selectedVoiceId ? 'bold' : 'normal'
+              fontWeight: voices.voice_id === selectedVoiceId ? 'bold' : 'normal'
             }}
           >
             {v.name}
