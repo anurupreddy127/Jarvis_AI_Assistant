@@ -5,14 +5,20 @@ const express = require("express");
 const app = express();
 const PORT = 5000;
 
+const PROJECT_ID = "proj771af6de";
+const OFFERING_ID = "ofrnga6994e55fd";
+
 app.get("/api/offerings", async (req, res) => {
   try {
-    const response = await axios.get("https://api.revenuecat.com/v2/offerings", {
-      headers: {
-        Authorization: `Bearer ${process.env.REVENUECAT_SECRET_KEY}`,
-        "Content-Type": "application/json"
-      },
-    });
+    const response = await axios.get(
+      `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/offerings/${OFFERING_ID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REVENUECAT_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching offerings:", error.response?.data || error.message);
