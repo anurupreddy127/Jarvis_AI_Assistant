@@ -47,7 +47,7 @@ export default function Voices() {
     const R      = 2               // sphere radius
     const FONT_SIZE   = 24
     const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
-    const SPRITE_SCALE = 30         // tweak to enlarge/shrink labels
+    const SPRITE_SCALE = 25         // tweak to enlarge/shrink labels
 
     voices.forEach((v, i) => {
       // spherical distribution (golden angle)
