@@ -17,7 +17,7 @@ export default function Voices() {
     }
     // 1) fetch voices
     fetch('https://api.elevenlabs.io/v1/voices', {
-      headers: { 'xi-api-key': YOUR_KEY }
+      headers: { 'xi-api-key': apiKey }
     })
     .then(res => res.json())
     .then(data => {
