@@ -71,7 +71,8 @@ export default function VoiceSphere() {
       <Canvas camera={{ position: [0, 0, 12], fov: 75 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
-        <OrbitControls enableZoom={true} />
+       <OrbitControls enableZoom={false} enablePan={false} autoRotate={true} autoRotateSpeed={1.5} />
+
         <SphereOfVoices voices={voices} />
       </Canvas>
     </div>
