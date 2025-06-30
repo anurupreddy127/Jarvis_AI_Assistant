@@ -56,19 +56,26 @@ export default function Voices() {
       const y = Math.sin(phi)*Math.sin(theta)*radius
       const z = Math.cos(phi)*radius
 
-      const FONT_SIZE = 48     // <-- bump this up to taste
+const FONT_SIZE = 48     // <-- bump this up to taste
 const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
 
-      // create text canvas
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      ctx.font = '24px Arial'
-      const w = ctx.measureText(v.name).width
-      canvas.width = w
-      canvas.height = 24
-      ctx.font = '24px Arial'
-      ctx.fillStyle = '#3C3744'
-      ctx.fillText(v.name, 0, 20)
+const canvas = document.createElement('canvas')
+const ctx    = canvas.getContext('2d')
+
+// set your new font
+ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`
+
+// measure & size canvas
+const metrics = ctx.measureText(v.name)
+const textWidth = Math.ceil(metrics.width)
+canvas.width  = textWidth
+canvas.height = FONT_SIZE * 1.2   // give a little vertical padding
+
+// redraw with the same settings
+ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+ctx.fillStyle = '#3C3744'
+ctx.fillText(v.name, 0, FONT_SIZE * 0.9) // baseline near bottom
+
 
       const tex = new THREE.CanvasTexture(canvas)
       const mat = new THREE.SpriteMaterial({ map: tex, transparent: true })
