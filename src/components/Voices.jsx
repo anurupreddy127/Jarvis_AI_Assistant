@@ -24,6 +24,7 @@ export default function VoiceSphere() {
         setVoices(list)
         list.forEach(v => {
           const audio = new Audio(v.sampleUrl)
+          a.crossOrigin = 'anonymous'
           audio.load()
           audioMap.current[v.id] = audio
         })
