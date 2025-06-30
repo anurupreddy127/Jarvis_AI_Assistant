@@ -1,139 +1,106 @@
-// src/components/VoiceSphere.jsx
-import React, { useEffect, useRef, useState } from 'react'
-import * as THREE from 'three'
+// src/components/Voices.jsx
+import React, { useEffect, useState, useRef } from 'react'
 
-export default function VoiceSphere() {
-  const mountRef = useRef()
-  const [voices, setVoices] = useState([])
-  const audioMap = useRef({})
+export default function Voices() {
+  const [voices, setVoices]         = useState([])
+  const [selectedVoiceId, setVoice] = useState(null)
+  const audioRef                    = useRef()
 
-  // 1) load ElevenLabs voices
   useEffect(() => {
     const key = import.meta.env.VITE_ELEVENLABS_KEY
     if (!key) {
-      console.error("Missing VITE_ELEVENLABS_KEY")
+      console.error('⚠️ Missing ElevenLabs API key! Set VITE_ELEVENLABS_KEY in your .env')
       return
     }
+
     fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': key }
     })
-    .then(r => r.json())
-    .then(json => {
-      const vs = json.voices.slice(0, 20)
-      setVoices(vs)
-      vs.forEach(v => {
-        const a = new Audio(v.sampleUrl)
-        a.crossOrigin = 'anonymous'
-        a.load()
-        audioMap.current[v.id] = a
-      })
+    .then(res => {
+      console.log('Fetch status:', res.status)
+      return res.json()
     })
-    .catch(console.error)
+    .then(json => {
+      console.log('Got ElevenLabs voices:', json.voices)
+      setVoices(json.voices.slice(0, 20))
+    })
+    .catch(err => console.error('Fetch error:', err))
   }, [])
 
-  // 2) three.js + click‐to‐play
+  // whenever selectedVoiceId changes, update the <audio> and play
   useEffect(() => {
-    if (!mountRef.current || voices.length === 0) return
+    if (!selectedVoiceId || !voices.length) return
 
-    // basic scene
-    const width  = mountRef.current.clientWidth
-    const height = mountRef.current.clientHeight
-    const scene  = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(50, width/height, 0.1, 100)
-    camera.position.set(0, 0, 10)
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
-    renderer.setSize(width, height)
-    mountRef.current.appendChild(renderer.domElement)
-
-    // build labels on a sphere
-    const group  = new THREE.Group()
-    const R      = 3
-    const FS     = 8
-    const FF     = 'Audiowide, Arial'
-    const SCALE  = 25
-
-    voices.forEach((v,i) => {
-      // spherical coords
-      const phi   = Math.acos(1 - 2*(i+0.5)/voices.length)
-      const theta = Math.PI*(1+Math.sqrt(5))*i
-      const x     = Math.sin(phi)*Math.cos(theta)*R
-      const y     = Math.sin(phi)*Math.sin(theta)*R
-      const z     = Math.cos(phi)*R
-
-      // HiDPI canvas
-      const dpr   = window.devicePixelRatio||1
-      const cnv   = document.createElement('canvas')
-      const ctx   = cnv.getContext('2d')
-      ctx.font    = `${FS}px ${FF}`
-      const w     = Math.ceil(ctx.measureText(v.name).width)
-      const h     = Math.ceil(FS*1.2)
-      cnv.width   = w*dpr; cnv.height = h*dpr
-      ctx.scale(dpr, dpr)
-      ctx.font    = `${FS}px ${FF}`
-      ctx.fillStyle = '#3C3744'
-      ctx.fillText(v.name, 0, FS*0.9)
-
-      const tex  = new THREE.CanvasTexture(cnv)
-      tex.minFilter = THREE.LinearFilter
-      tex.magFilter = THREE.LinearFilter
-
-      const mat  = new THREE.SpriteMaterial({ map: tex, transparent: true })
-      const sp   = new THREE.Sprite(mat)
-      sp.position.set(x, y, z)
-      sp.scale.set(w/SCALE, FS/SCALE, 1)
-      sp.userData = { voiceId: v.id }
-      group.add(sp)
-    })
-
-    scene.add(group)
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
-    const dl = new THREE.DirectionalLight(0xffffff, 0.5)
-    dl.position.set(5,5,5)
-    scene.add(dl)
-
-    // raycaster for click
-    const ray = new THREE.Raycaster()
-    const mouse = new THREE.Vector2()
-
-    function onClick(ev) {
-      // get click coords relative to canvas
-      const rect = renderer.domElement.getBoundingClientRect()
-      mouse.x = ((ev.clientX - rect.left) / rect.width)*2 - 1
-      mouse.y = -((ev.clientY - rect.top) / rect.height)*2 + 1
-
-      // do the pick
-      ray.setFromCamera(mouse, camera)
-      const hits = ray.intersectObjects(group.children)
-      if (hits.length) {
-        const id = hits[0].object.userData.voiceId
-        const audio = audioMap.current[id]
-        if (audio) {
-          audio.currentTime = 0
-          audio.play().catch(e=> console.warn('play() failed',e))
-        }
-      }
+    const voice = voices.find(v => v.id === selectedVoiceId)
+    if (!voice) {
+      console.warn('Selected voice not found in list:', selectedVoiceId)
+      return
     }
 
-    renderer.domElement.addEventListener('pointerdown', onClick)
-
-    // render loop
-    const loop = () => {
-      group.rotation.y += 0.001
-      renderer.render(scene, camera)
-      requestAnimationFrame(loop)
+    console.log('Playing sample for voice:', voice.name, voice.id)
+    if (audioRef.current) {
+      audioRef.current.src = voice.sampleUrl
+      audioRef.current
+        .play()
+        .catch(err => console.error('Audio play() failed:', err))
     }
-    loop()
+  }, [selectedVoiceId, voices])
 
-    // cleanup
-    return () => {
-      renderer.domElement.removeEventListener('pointerdown', onClick)
-      if (mountRef.current.contains(renderer.domElement)) {
-        mountRef.current.removeChild(renderer.domElement)
-      }
-      renderer.dispose()
-    }
-  }, [voices])
+  return (
+    <div style={styles.container}>
+      <aside style={styles.sidebar}>
+        <h2>Pick a voice</h2>
+        {voices.map(v => (
+          <div
+            key={v.id}
+            onClick={() => {
+              console.log('Clicked voice:', v.id, v.name)
+              setVoice(v.id)
+            }}
+            style={{
+              ...styles.voiceItem,
+              fontWeight: v.id === selectedVoiceId ? 'bold' : 'normal'
+            }}
+          >
+            {v.name}
+          </div>
+        ))}
+      </aside>
+      <main style={styles.main}>
+        <h2>Sample Player</h2>
+        <audio
+          ref={audioRef}
+          controls
+          style={{ width: '100%', marginTop: 16 }}
+        />
+      </main>
+    </div>
+  )
+}
 
-  return <div ref={mountRef} style={{ width:'100%',height:'100vh' }} />
+const styles = {
+  container: {
+    display: 'flex',
+    height: '100vh',
+    fontFamily: 'Arial, sans-serif',
+    background: '#FBFFF1',
+    color: '#3C3744'
+  },
+  sidebar: {
+    width: 200,
+    borderRight: '1px solid #ddd',
+    padding: 16,
+    boxSizing: 'border-box',
+    overflowY: 'auto'
+  },
+  voiceItem: {
+    padding: '8px 4px',
+    cursor: 'pointer',
+    userSelect: 'none'
+  },
+  main: {
+    flex: 1,
+    padding: 16,
+    boxSizing: 'border-box'
+  }
 }
