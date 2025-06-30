@@ -10,6 +10,7 @@ export default function Demo() {
         padding: '4rem 2rem',
         fontFamily: "'Audiowide', cursive",
         textAlign: 'center',
+        zIndex:201
       }}
     >
       <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
@@ -32,7 +33,7 @@ export default function Demo() {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
-          style={{zIndex:201, position: 'relative'}}
+          
         ></iframe>
       </div>
 
