@@ -9,7 +9,7 @@ app.get("/api/offerings", async (req, res) => {
   try {
     const response = await axios.get("https://api.revenuecat.com/v2/offerings", {
       headers: {
-        Authorization: `Bearer ${process.env.REVENUECAT_API_KEY}`,
+        Authorization: `Bearer ${process.env.REVENUECAT_SECRET_KEY}`,
         "Content-Type": "application/json"
       },
     });
