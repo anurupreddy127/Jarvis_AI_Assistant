@@ -79,7 +79,18 @@ export default function VoiceSphere() {
   }, [])
 
   return (
- <div style={{ position: 'relative', height: '100vh', background: 'black' }}>
+    <section
+      id="voices"
+      style={{
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        position: 'relative',
+        background: 'black',
+        color: 'white',
+        fontFamily: "'Audiowide', cursive"
+      }}
+    >
       {/* Heading */}
       <h1 style={{
         position: 'absolute',
@@ -100,6 +111,7 @@ export default function VoiceSphere() {
         <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1.5} />
         <SphereOfVoices voices={voices} />
       </Canvas>
-    </div>
+    </section>
   )
 }
+
