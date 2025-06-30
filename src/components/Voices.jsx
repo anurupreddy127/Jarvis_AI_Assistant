@@ -5,7 +5,7 @@ import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js'
 export default function Voices() {
   const [voices, setVoices] = useState([])
   const client = new ElevenLabsClient({
-    apiKey: import.meta.env.VITE_ELEVENLABS_API_KEY
+    apiKey: import.meta.env.VITE_ELEVENLABSAPI_KEY
   })
 
   useEffect(() => {
