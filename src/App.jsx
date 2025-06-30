@@ -31,7 +31,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/subscriptions" element={<SubscriptionPage />} />
+        <Route path="/subscriptions" element={<SubscribePage />} />
       </Routes>
     </Router>
   )
