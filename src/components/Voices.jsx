@@ -82,7 +82,7 @@ export default function VoiceSphere() {
     <section
       id="voices"
       style={{
-        width: '100vw',
+        width: '100%',
         height: '100vh',
         overflow: 'hidden',
         position: 'relative',
