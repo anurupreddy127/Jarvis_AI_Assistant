@@ -28,7 +28,7 @@ export default function SubscribePage() {
           <div key={pkg.id} style={{ marginTop: '1rem', border: '1px solid #fff', borderRadius: '8px', padding: '1rem', width: '300px', textAlign: 'center' }}>
             <p><strong>{pkg.display_name}</strong></p>
             <p>Lookup Key: {pkg.lookup_key}</p>
-            <button onClick={() => window.location.href = "https://pay.rev.cat/iuszxgkdyyxezjbw/"} style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>
+            <button onClick={() => window.location.href = "https://pay.rev.cat/iuszxgkdyyxezjbw/anurupreddy127"} style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>
               Subscribe
             </button>
           </div>
