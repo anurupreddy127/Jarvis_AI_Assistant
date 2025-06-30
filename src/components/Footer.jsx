@@ -4,7 +4,7 @@ import '../css/footer.css';
 
 export default function Footer() {
   return (
-    <footer className="subscribe-footer" style={{z-Index: 201}}>
+    <footer className="subscribe-footer" style={{z-index: 201}}>
       <div className="footer-content">
         <p>&copy; {new Date().getFullYear()} Jarvis AI Assistant. All rights reserved.</p>
         <div className="footer-links">
