@@ -56,6 +56,9 @@ export default function Voices() {
       const y = Math.sin(phi)*Math.sin(theta)*radius
       const z = Math.cos(phi)*radius
 
+      const FONT_SIZE = 48     // <-- bump this up to taste
+const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
+
       // create text canvas
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
