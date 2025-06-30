@@ -1,8 +1,6 @@
 // src/components/VoiceSphere.jsx
 import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export default function Voices() {
   const mountRef = useRef()
@@ -10,18 +8,17 @@ export default function Voices() {
   const audioMap = useRef({})
 
   useEffect(() => {
-      const apiKey = import.meta.env.VITE_ELEVENLABS_KEY
+    const apiKey = import.meta.env.VITE_ELEVENLABS_KEY
     if (!apiKey) {
-      console.error("Missing ElevenLabs API key (VITE_ELEVEN_LABS_KEY)")
+      console.error("Missing ElevenLabs API key (VITE_ELEVENLABS_KEY)")
       return
     }
-    // 1) fetch voices
     fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': apiKey }
     })
     .then(res => res.json())
     .then(data => {
-      const list = data.voices.slice(0, 20) // pick as many as you like
+      const list = data.voices.slice(0, 20)
       setVoices(list)
       list.forEach(v => {
         const a = new Audio(v.sampleUrl)
@@ -34,10 +31,10 @@ export default function Voices() {
   useEffect(() => {
     if (!mountRef.current || voices.length === 0) return
 
-    // 2) three.js setup
-    const width = mountRef.current.clientWidth
+    // Scene + camera + renderer
+    const width  = mountRef.current.clientWidth
     const height = mountRef.current.clientHeight
-    const scene = new THREE.Scene()
+    const scene  = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(50, width/height, 0.1, 100)
     camera.position.set(0, 0, 10)
 
@@ -45,87 +42,81 @@ export default function Voices() {
     renderer.setSize(width, height)
     mountRef.current.appendChild(renderer.domElement)
 
-    // 3) create group of text‐sprites on a sphere
-    const group = new THREE.Group()
-    const radius = 3
-// … in your Voices component …
+    // Build the sphere of text‐sprites
+    const group  = new THREE.Group()
+    const R      = 3               // sphere radius
+    const FONT_SIZE   = 48
+    const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
+    const SPRITE_SCALE = 30         // tweak to enlarge/shrink labels
 
-voices.forEach((v,i) => {
-  // … compute x,y,z …
-  const FONT_SIZE   = 48
-  const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
+    voices.forEach((v, i) => {
+      // spherical distribution (golden angle)
+      const phi   = Math.acos(1 - 2*(i + 0.5)/voices.length)
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i
+      const x     = Math.sin(phi) * Math.cos(theta) * R
+      const y     = Math.sin(phi) * Math.sin(theta) * R
+      const z     = Math.cos(phi) * R
 
-  // 1) draw into canvas
-  const canvas = document.createElement('canvas')
-  const ctx    = canvas.getContext('2d')
-  ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+      // draw text into canvas
+      const canvas = document.createElement('canvas')
+      const ctx    = canvas.getContext('2d')
+      ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+      const metrics = ctx.measureText(v.name)
+      const textWidth = Math.ceil(metrics.width)
+      canvas.width  = textWidth
+      canvas.height = Math.ceil(FONT_SIZE * 1.2)
+      ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+      ctx.fillStyle = '#3C3744'
+      ctx.fillText(v.name, 0, FONT_SIZE * 0.9)
 
-  // measure & resize
-  const metrics   = ctx.measureText(v.name)
-  const textWidth = Math.ceil(metrics.width)
-  canvas.width    = textWidth
-  canvas.height   = Math.ceil(FONT_SIZE * 1.2)
-
-  // redraw text
-  ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
-  ctx.fillStyle = '#3C3744'
-  ctx.fillText(v.name, 0, FONT_SIZE * 0.9)
-
-  // 2) make sprite
-  const tex    = new THREE.CanvasTexture(canvas)
-  const mat    = new THREE.SpriteMaterial({ map: tex, transparent: true })
-  const sprite = new THREE.Sprite(mat)
-
-  // 3) scale in world‐space
-  const SPRITE_SCALE = 30
-  sprite.scale.set(
-    textWidth  / SPRITE_SCALE,
-    FONT_SIZE  / SPRITE_SCALE,
-    1
-  )
-
-  sprite.position.set(x, y, z)
-  sprite.userData    = { voiceId: v.id }
-  group.add(sprite)
-})
+      // create sprite
+      const texture = new THREE.CanvasTexture(canvas)
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true })
+      const sprite = new THREE.Sprite(material)
+      sprite.position.set(x, y, z)
+      sprite.scale.set(
+        textWidth / SPRITE_SCALE,
+        FONT_SIZE / SPRITE_SCALE,
+        1
+      )
+      sprite.userData = { voiceId: v.id }
+      group.add(sprite)
+    })
 
     scene.add(group)
-
-    // 4) lights + controls (optional)
     scene.add(new THREE.AmbientLight(0xffffff, 0.5))
     const dir = new THREE.DirectionalLight(0xffffff, 0.5)
-    dir.position.set(5,5,5)
+    dir.position.set(5, 5, 5)
     scene.add(dir)
 
-    // raycaster for hover
-    const ray = new THREE.Raycaster()
-    const mouse = new THREE.Vector2()
-
-    function onMove(e) {
-      mouse.x = (e.clientX/width)*2 -1
-      mouse.y = -(e.clientY/height)*2 +1
+    // raycaster for hover‐play
+    const raycaster = new THREE.Raycaster()
+    const mouse     = new THREE.Vector2()
+    function onPointerMove(e) {
+      mouse.x = (e.clientX / width)  * 2 - 1
+      mouse.y = -(e.clientY / height) * 2 + 1
     }
-    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointermove', onPointerMove)
 
-    // 5) animate
+    // animation loop
     const animate = () => {
       requestAnimationFrame(animate)
-
-      // rotate sphere
       group.rotation.y += 0.001
 
-      // raycast
-      ray.setFromCamera(mouse, camera)
-      const hits = ray.intersectObjects(group.children)
-      group.children.forEach(s => {
-        if (hits.length && hits[0].object === s) {
-          s.scale.set(1.5,1.5,1)
-          audioMap.current[s.userData.voiceId]?.play()
-        } else {
-          s.scale.set(1,1,1)
-          audioMap.current[s.userData.voiceId]?.pause()
-           const audio = audioMap.current[s.userData.voiceId]
-         if (audio) audio.currentTime = 0
+      raycaster.setFromCamera(mouse, camera)
+      const hits = raycaster.intersectObjects(group.children)
+      group.children.forEach(sprite => {
+        const isHovered = hits[0]?.object === sprite
+        sprite.scale.set(
+          (isHovered ? 1.5 : 1) * (sprite.scale.x),
+          (isHovered ? 1.5 : 1) * (sprite.scale.y),
+          1
+        )
+        const audio = audioMap.current[sprite.userData.voiceId]
+        if (isHovered) audio?.play()
+        else {
+          audio?.pause()
+          if (audio) audio.currentTime = 0
         }
       })
 
@@ -135,11 +126,13 @@ voices.forEach((v,i) => {
 
     // cleanup
     return () => {
-      window.removeEventListener('pointermove', onMove)
-      mountRef.current.removeChild(renderer.domElement)
+      window.removeEventListener('pointermove', onPointerMove)
       renderer.dispose()
+      if (mountRef.current.contains(renderer.domElement)) {
+        mountRef.current.removeChild(renderer.domElement)
+      }
     }
   }, [voices])
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />
+  return <div ref={mountRef} style={{ width:'100%', height:'100vh' }} />
 }
