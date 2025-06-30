@@ -1,10 +1,8 @@
-// src/components/Voices.jsx
 import React, { useEffect, useState } from 'react'
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js'
 
 export default function Voices() {
   const [voices, setVoices] = useState([])
-  const [audio, setAudio] = useState(null)
 
   const client = new ElevenLabsClient({
     apiKey: import.meta.env.VITE_ELEVENLABS_KEY
@@ -22,41 +20,26 @@ export default function Voices() {
     try {
       const response = await client.textToSpeech.convert({
         voiceId: voiceId,
-        text: "Hi, I'm your Jarvis assistant. This is a voice sample.",
-        modelId: 'eleven_multilingual_v2', // or 'eleven_multilingual_v1'
-        voiceSettings: {
-          stability: 0.5,
-          similarityBoost: 0.5
-        }
+        text: "Hello! This is a sample of my voice.",
       })
 
-      const audioBlob = await response.blob()
-      const audioUrl = URL.createObjectURL(audioBlob)
-
-      // Stop existing audio
-      if (audio) {
-        audio.pause()
-      }
-
-      const newAudio = new Audio(audioUrl)
-      setAudio(newAudio)
-      newAudio.play()
-    } catch (err) {
-      console.error("Error playing voice sample:", err)
+      const audioUrl = URL.createObjectURL(response)
+      const audio = new Audio(audioUrl)
+      audio.play()
+    } catch (error) {
+      console.error("Error playing voice sample:", error)
     }
   }
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Pick a voice to hear a sample:</h2>
-      <ul className="space-y-2">
+      <h2>Pick a voice:</h2>
+      <ul>
         {voices.map(v => (
-          <li
-            key={v.voice_id}
-            onClick={() => playVoiceSample(v.voice_id)}
-            className="cursor-pointer text-blue-600 hover:underline"
-          >
-            🔊 {v.name}
+          <li key={v.voice_id}>
+            <button onClick={() => playVoiceSample(v.voice_id)}>
+              🔊 {v.name}
+            </button>
           </li>
         ))}
       </ul>
