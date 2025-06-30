@@ -77,10 +77,17 @@ ctx.fillStyle = '#3C3744'
 ctx.fillText(v.name, 0, FONT_SIZE * 0.9) // baseline near bottom
 
 
-      const tex = new THREE.CanvasTexture(canvas)
+     const tex = new THREE.CanvasTexture(canvas)
       const mat = new THREE.SpriteMaterial({ map: tex, transparent: true })
       const sprite = new THREE.Sprite(mat)
-      sprite.scale.set(w/50, 24/50, 1)  // adjust size
+
+      // choose a scale factor to taste (smaller → sprite appears larger)
+      const SPRITE_SCALE = 30
+      sprite.scale.set(
+        textWidth  / SPRITE_SCALE,
+        FONT_SIZE  / SPRITE_SCALE,
+        1
+      )
       sprite.position.set(x, y, z)
       sprite.userData = { voiceId: v.id }
       group.add(sprite)
