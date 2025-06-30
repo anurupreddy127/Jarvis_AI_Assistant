@@ -120,12 +120,14 @@ export default function VoiceSphere() {
         const hit = hits[0]?.object === sprite
         const audio = audioMap.current[sprite.userData.voiceId]
         if (hit) {
-          if (audio?.paused) audio.play()
+         console.log("hovering over", sprite.userData.voiceId)
+          if (audio) {
+            audio.play().catch(err => console.warn("Audio play failed:", err))
+          }
         } else {
           if (audio) {
-            audio.pause()
-            audio.currentTime = 0
-          }
+      audio.pause()
+      audio.currentTime = 0
         }
       })
 
