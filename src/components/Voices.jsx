@@ -78,12 +78,26 @@ export default function VoiceSphere() {
   }, [])
 
   return (
-    <div style={{ height: '100vh', background: 'black' }}>
+ <div style={{ position: 'relative', height: '100vh', background: 'black' }}>
+      {/* Heading */}
+      <h1 style={{
+        position: 'absolute',
+        top: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        color: 'white',
+        fontSize: '2rem',
+        zIndex: 10,
+        fontFamily: 'sans-serif'
+      }}>
+        Explore ElevenLabs Voices
+      </h1>
+
+      {/* 3D Canvas */}
       <Canvas camera={{ position: [0, 0, 12], fov: 75 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
-       <OrbitControls enableZoom={false} enablePan={false} autoRotate={true} autoRotateSpeed={1.5} />
-
+        <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1.5} />
         <SphereOfVoices voices={voices} />
       </Canvas>
     </div>
