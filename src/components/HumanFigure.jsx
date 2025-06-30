@@ -83,8 +83,7 @@ const pointCount = headArr.length / 3
 
 // 2) prepare an array to hold the uniform sphere positions
 const sphereArr = new Float32Array(headArr.length)
-const R = 1.5  // your desired sphere radius
-
+const R = 1.58
 // 3) golden angle constant
 const goldenAngle = Math.PI * (3 - Math.sqrt(5))
 
