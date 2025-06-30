@@ -47,7 +47,7 @@ export default function Voices() {
 
     // 3) create group of text‐sprites on a sphere
     const group = new THREE.Group()
-    const radius = 5
+    const radius = 3
     voices.forEach((v, i) => {
       // position by golden‐angle spherical distribution
       const phi = Math.acos(1 - 2*(i+0.5)/voices.length)
