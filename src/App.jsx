@@ -12,6 +12,7 @@ function App() {
         <Hero />
         <About />
         <Features />
+        <Voices />
       </main>
 
     </div>
