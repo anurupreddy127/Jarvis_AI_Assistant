@@ -57,7 +57,7 @@ export default function Voices() {
       const z = Math.cos(phi)*radius
 
 const FONT_SIZE = 48     // <-- bump this up to taste
-const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
+const FONT_FAMILY = 'Audiowide'
 
 const canvas = document.createElement('canvas')
 const ctx    = canvas.getContext('2d')
