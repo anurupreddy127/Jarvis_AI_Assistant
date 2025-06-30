@@ -16,7 +16,7 @@ export default function Voices() {
 
     fetch('https://api.elevenlabs.io/v1/voices', {
       headers: {
-        'xi-api-key': key
+        'xi-api-key': sk_ac7ddd066774f2d09c4851965752b7af2b74ddf31599fb36
       }
     })
     .then(res => {
