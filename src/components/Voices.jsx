@@ -99,29 +99,36 @@ export default function Voices() {
     window.addEventListener('pointermove', onPointerMove)
 
     // animation loop
-    const animate = () => {
-      requestAnimationFrame(animate)
-      group.rotation.y += 0.001
+const animate = () => {
+  requestAnimationFrame(animate)
 
-      raycaster.setFromCamera(mouse, camera)
-      const hits = raycaster.intersectObjects(group.children)
-      group.children.forEach(sprite => {
-        const isHovered = hits[0]?.object === sprite
-        sprite.scale.set(
-          (isHovered ? 1.5 : 1) * (sprite.scale.x),
-          (isHovered ? 1.5 : 1) * (sprite.scale.y),
-          1
-        )
-        const audio = audioMap.current[sprite.userData.voiceId]
-        if (isHovered) audio?.play()
-        else {
-          audio?.pause()
-          if (audio) audio.currentTime = 0
-        }
-      })
+  // slowly rotate the sphere
+  group.rotation.y += 0.001
 
-      renderer.render(scene, camera)
+  // raycast to see if any sprite is under the cursor
+  raycaster.setFromCamera(mouse, camera)
+  const hits = raycaster.intersectObjects(group.children)
+
+  group.children.forEach(sprite => {
+    const isHovered = hits.length && hits[0].object === sprite
+    const audio     = audioMap.current[sprite.userData.voiceId]
+
+    if (isHovered) {
+      // if it’s hovered and not already playing, start it
+      if (audio && audio.paused) audio.play()
+    } else {
+      // otherwise reset it
+      if (audio) {
+        audio.pause()
+        audio.currentTime = 0
+      }
     }
+  })
+
+  renderer.render(scene, camera)
+}
+animate()
+
     animate()
 
     // cleanup
