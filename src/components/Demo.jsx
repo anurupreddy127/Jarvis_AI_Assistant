@@ -17,17 +17,20 @@ export default function Demo() {
       </h1>
 
       <p style={{ maxWidth: '700px', margin: '0 auto 2.5rem', lineHeight: '1.6', fontSize: '1rem' }}>
-        Jarvis is a voice-controlled Chrome extension that listens to your voice, controls your browser, and speaks back using ultra-realistic ElevenLabs voices. Built with React, ChatGPT, and Three.js — it's the future of browsing.
+        Jarvis is a voice-controlled Chrome extension that listens to your commands, automates your browser,
+        and speaks back using ultra-realistic ElevenLabs voices. Built with React, ChatGPT, and Three.js —
+        it's the future of browsing.
       </p>
 
-      <div style={{ maxWidth: '960px', margin: '0 auto', aspectRatio: '16/9' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto', aspectRatio: '16 / 9' }}>
         <iframe
           width="100%"
           height="100%"
-          src="https://youtu.be/vBdBXz1gbug"
+          src="https://www.youtube.com/embed/vBdBXz1gbug?si=wbHol325MlB0lB6N"
           title="Jarvis Chrome Extension Demo"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
         ></iframe>
       </div>
