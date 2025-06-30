@@ -8,7 +8,7 @@ import Features from './components/Features'
 import VoiceSphere from './components/Voices'
 import Demo from './components/Demo'
 import DownloadSection from './components/DownloadSection'
-import SubscriptionPage from './components/SubscriptionPage' // create this file
+import SubscriptionPage from './components/SubscribePage' // create this file
 
 function HomePage() {
   return (
