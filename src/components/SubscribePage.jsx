@@ -8,7 +8,7 @@ export default function SubscribePage() {
     fetch("http://localhost:5000/api/offerings")
       .then(res => res.json())
       .then(data => {
-        console.log("Received offering:", data);
+        console.log("Received offering with packages:", data);
         setOffering(data);
         setLoading(false);
       })
@@ -19,14 +19,21 @@ export default function SubscribePage() {
   }, []);
 
   return (
-    <section style={{ minHeight: '100vh', background: '#111', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+    <section style={{ minHeight: '100vh', background: '#111', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       <h2>Available Plans</h2>
       {loading ? (
         <p>Loading...</p>
-      ) : offering && offering.display_name ? (
-        <p>{offering.display_name}</p> // or render real package info here
+      ) : offering?.packages?.length > 0 ? (
+        offering.packages.map((pkg) => (
+          <div key={pkg.identifier} style={{ marginTop: '1rem', border: '1px solid #fff', padding: '1rem', width: '300px', textAlign: 'center' }}>
+            <p><strong>{pkg.identifier}</strong></p>
+            <p>{pkg.product?.name || 'Unnamed Product'}</p>
+            <p>{pkg.product?.price_string || 'Price not available'}</p>
+            <button style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>Subscribe</button>
+          </div>
+        ))
       ) : (
-        <p>No offerings available</p>
+        <p>No packages available</p>
       )}
     </section>
   );
