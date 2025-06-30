@@ -51,29 +51,29 @@ export default function Voices() {
 
     voices.forEach((v, i) => {
 const dpr    = window.devicePixelRatio || 1
-+      const canvas = document.createElement('canvas')
-+      const ctx    = canvas.getContext('2d')
-+
-+      // measure in CSS pixels first
-+      ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
-+      const metrics = ctx.measureText(v.name)
-+      const textWidth  = Math.ceil(metrics.width)
-+      const textHeight = Math.ceil(FONT_SIZE * 1.2)
-+
-+      // size the canvas in *device* pixels…
-+      canvas.width  = textWidth  * dpr
-+      canvas.height = textHeight * dpr
-+      // …but scale the drawing context back to CSS size
-+      ctx.scale(dpr, dpr)
-+      ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
-+      ctx.fillStyle = '#3C3744'
-+      ctx.fillText(v.name, 0, FONT_SIZE * 0.9)
-+
-+      // create a CanvasTexture and force linear filtering
-+      const texture = new THREE.CanvasTexture(canvas)
-+      texture.minFilter = THREE.LinearFilter
-+      texture.magFilter = THREE.LinearFilter
-+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true })
+      const canvas = document.createElement('canvas')
+      const ctx    = canvas.getContext('2d')
+
+      // measure in CSS pixels first
+      ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+      const metrics = ctx.measureText(v.name)
+      const textWidth  = Math.ceil(metrics.width)
+      const textHeight = Math.ceil(FONT_SIZE * 1.2)
+
+      // size the canvas in *device* pixels…
+      canvas.width  = textWidth  * dpr
+      canvas.height = textHeight * dpr
+      // …but scale the drawing context back to CSS size
+      ctx.scale(dpr, dpr)
+      ctx.font      = `${FONT_SIZE}px ${FONT_FAMILY}`
+      ctx.fillStyle = '#3C3744'
+      ctx.fillText(v.name, 0, FONT_SIZE * 0.9)
+
+      // create a CanvasTexture and force linear filtering
+      const texture = new THREE.CanvasTexture(canvas)
+      texture.minFilter = THREE.LinearFilter
+      texture.magFilter = THREE.LinearFilter
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true })
       const sprite = new THREE.Sprite(material)
       sprite.position.set(x, y, z)
       sprite.scale.set(
