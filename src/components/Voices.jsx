@@ -28,7 +28,6 @@ function VoiceLabel({ position, name, url }) {
       onClick={handleClick}
       anchorX="center"
       anchorY="middle"
-     font="/fonts/Audiowide.typeface.json"
 
     >
       {name}
