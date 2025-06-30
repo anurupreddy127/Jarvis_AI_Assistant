@@ -19,8 +19,10 @@ export default function Voices() {
   const playVoiceSample = async (voiceId) => {
     try {
       const response = await client.textToSpeech.convert({
-        voiceId: voiceId,
-        text: "Hello! This is a sample of my voice.",
+        request: {
+          voiceId: voiceId,
+          text: "Hello! This is a sample of my voice."
+        }
       })
 
       const audioUrl = URL.createObjectURL(response)
