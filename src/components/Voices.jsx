@@ -4,6 +4,16 @@ import { OrbitControls, Text } from '@react-three/drei'
 import * as THREE from 'three'
 
 function VoiceLabel({ position, name, url }) {
+  const { camera } = useThree()
+  const ref = useRef()
+
+  // Rotate the label to face the camera every frame
+  useFrame(() => {
+    if (ref.current) {
+      ref.current.lookAt(camera.position)
+    }
+  })
+
   const handleClick = () => {
     const audio = new Audio(url)
     audio.play()
@@ -11,6 +21,7 @@ function VoiceLabel({ position, name, url }) {
 
   return (
     <Text
+      ref={ref}
       position={position}
       fontSize={0.5}
       color="white"
