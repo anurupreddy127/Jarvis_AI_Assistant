@@ -11,7 +11,7 @@ const OFFERING_ID = "ofrnga6994e55fd";
 app.get("/api/offerings", async (req, res) => {
   try {
     const response = await axios.get(
-      `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/offerings/${OFFERING_ID}`,
+      "https://api.revenuecat.com/v2/projects/proj771af6de/offerings?expand[]=package.product",
       {
         headers: {
           Authorization: `Bearer ${process.env.REVENUECAT_SECRET_KEY}`,
@@ -25,6 +25,7 @@ app.get("/api/offerings", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch offerings" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
