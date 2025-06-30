@@ -11,7 +11,7 @@ const OFFERING_ID = "ofrnga6994e55fd";
 app.get("/api/offerings", async (req, res) => {
   try {
     const response = await axios.get(
-      "https://api.revenuecat.com/v2/projects/proj771af6de/offerings?expand[]=package.product",
+      "https://api.revenuecat.com/v2/projects/proj771af6de/offerings/ofrnga6994e55fd/packages",
       {
         headers: {
           Authorization: `Bearer ${process.env.REVENUECAT_SECRET_KEY}`,
@@ -19,12 +19,14 @@ app.get("/api/offerings", async (req, res) => {
         },
       }
     );
-    res.json(response.data);
+
+    res.json({ packages: response.data.items }); // 👈 match frontend expectation
   } catch (error) {
-    console.error("Error fetching offerings:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to fetch offerings" });
+    console.error("Error fetching packages:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to fetch packages" });
   }
 });
+
 
 
 app.listen(PORT, () => {
