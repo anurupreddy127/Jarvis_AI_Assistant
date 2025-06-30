@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import About from './components/About'
 import Features from './components/Features'
 import VoiceSphere from './components/Voices'
+import Demo from './components/Demo'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <About />
         <Features />
         <VoiceSphere />
+        <Demo />
       </main>
 
     </div>
