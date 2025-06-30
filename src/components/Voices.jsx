@@ -1,6 +1,6 @@
 // src/components/Voices.jsx
 import React, { useState, useEffect } from 'react'
-import './voices.css'
+import '../css/voices.css'
 
 export default function Voices() {
   const [voices, setVoices]     = useState([])
