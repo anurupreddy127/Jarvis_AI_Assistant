@@ -23,7 +23,7 @@ export default function Voices() {
       const response = await client.textToSpeech.convert({
         voiceId: voiceId,
         text: "Hi, I'm your Jarvis assistant. This is a voice sample.",
-        modelId: 'eleven_monolingual_v1', // or 'eleven_multilingual_v1'
+        modelId: 'eleven_multilingual_v2', // or 'eleven_multilingual_v1'
         voiceSettings: {
           stability: 0.5,
           similarityBoost: 0.5
