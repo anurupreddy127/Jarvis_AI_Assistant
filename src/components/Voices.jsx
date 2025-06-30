@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls, Text } from '@react-three/drei'
 import * as THREE from 'three'
