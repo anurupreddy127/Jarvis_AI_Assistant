@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
 export default function SubscribePage() {
-  const [offering, setOffering] = useState(null);
+  const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/offerings")
       .then(res => res.json())
       .then(data => {
-        console.log("Received offering with packages:", data);
-        setOffering(data);
+        console.log("Received offering data:", data);
+
+        // Find current offering (usually identifier = 'default')
+        const currentOffering = data.offerings?.find(o => o.identifier === 'default' && o.is_current);
+        if (currentOffering?.packages?.length > 0) {
+          setPackages(currentOffering.packages);
+        } else {
+          setPackages([]);
+        }
+
         setLoading(false);
       })
       .catch(err => {
@@ -23,8 +31,8 @@ export default function SubscribePage() {
       <h2>Available Plans</h2>
       {loading ? (
         <p>Loading...</p>
-      ) : offering?.packages?.length > 0 ? (
-        offering.packages.map((pkg) => (
+      ) : packages.length > 0 ? (
+        packages.map((pkg) => (
           <div key={pkg.identifier} style={{ marginTop: '1rem', border: '1px solid #fff', padding: '1rem', width: '300px', textAlign: 'center' }}>
             <p><strong>{pkg.identifier}</strong></p>
             <p>{pkg.product?.name || 'Unnamed Product'}</p>
