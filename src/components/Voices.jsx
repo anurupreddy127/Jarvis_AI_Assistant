@@ -1,72 +1,79 @@
-// src/components/Voices.jsx
-import React, { useState, useEffect } from 'react'
-import '../css/voices.css'
+import React, { useEffect, useState } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls, Text } from '@react-three/drei'
+import * as THREE from 'three'
 
-export default function Voices() {
-  const [voices, setVoices]     = useState([])
-  const [hovered, setHovered]   = useState(null)
-  const [error, setError]       = useState(null)
+function VoiceLabel({ position, name, url }) {
+  const handleClick = () => {
+    const audio = new Audio(url)
+    audio.play()
+  }
+
+  return (
+    <Text
+      position={position}
+      fontSize={0.5}
+      color="white"
+      onClick={handleClick}
+      anchorX="center"
+      anchorY="middle"
+    >
+      {name}
+    </Text>
+  )
+}
+
+function SphereOfVoices({ voices }) {
+  const radius = 5
+  const voiceCount = voices.length
+
+  const positions = voices.map((_, i) => {
+    const phi = Math.acos(-1 + (2 * i) / voiceCount)
+    const theta = Math.sqrt(voiceCount * Math.PI) * phi
+    return new THREE.Vector3(
+      radius * Math.cos(theta) * Math.sin(phi),
+      radius * Math.sin(theta) * Math.sin(phi),
+      radius * Math.cos(phi)
+    )
+  })
+
+  return (
+    <>
+      {voices.map((voice, i) => (
+        <VoiceLabel
+          key={voice.voice_id}
+          name={voice.name}
+          url={voice.preview_url}
+          position={positions[i]}
+        />
+      ))}
+    </>
+  )
+}
+
+export default function VoiceSphere() {
+  const [voices, setVoices] = useState([])
 
   useEffect(() => {
     const key = import.meta.env.VITE_ELEVENLABS_KEY
-    if (!key) {
-      setError('Missing ElevenLabs API key!')
-      return
-    }
+    if (!key) return
 
     fetch('https://api.elevenlabs.io/v1/voices', {
-      headers: {
-        'xi-api-key': key
-      }
+      headers: { 'xi-api-key': key }
     })
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      return res.json()
-    })
-    .then(data => {
-      // data.voices is your array of { voice_id, name, preview_url, ... }
-      setVoices(data.voices)
-      if (data.voices.length) {
-        setHovered(data.voices[0].voice_id)
-      }
-    })
-    .catch(err => {
-      console.error(err)
-      setError('Failed to load voices')
-    })
+      .then(res => res.json())
+      .then(data => setVoices(data.voices.slice(0, 50))) // limit for now
+      .catch(console.error)
   }, [])
 
-  if (error) return <p className="voices-error">{error}</p>
-  if (!voices.length) return <p className="voices-loading">Loading voices…</p>
-
-  const current = voices.find(v => v.voice_id === hovered) || voices[0]
-
   return (
-    <section id="voices" className="voices-section">
-      <div className="voices-container">
-        {/* left column: list of voice names */}
-        <div className="voices-list">
-          {voices.map(v => (
-            <div
-              key={v.voice_id}
-              className={`voice-item${hovered === v.voice_id ? ' active' : ''}`}
-              onMouseEnter={() => setHovered(v.voice_id)}
-            >
-              {v.name}
-            </div>
-          ))}
-        </div>
-
-        {/* right column: preview audio player + image */}
-        <div className="voice-preview">
-          {/* optional avatar if you have one */}
-          {current.preview_url && (
-            <audio controls src={current.preview_url}>
-              Your browser does not support the audio element.
-            </audio>
-          )}
-        </div>
-      </div>
-    </section>
+    <div style={{ height: '100vh', background: 'black' }}>
+      <Canvas camera={{ position: [0, 0, 12], fov: 75 }}>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} />
+        <OrbitControls enableZoom={true} />
+        <SphereOfVoices voices={voices} />
+      </Canvas>
+    </div>
   )
 }
