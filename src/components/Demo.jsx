@@ -32,7 +32,7 @@ export default function Demo() {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
-          style={{zIndex:201, position 'relative'}}
+          style={{zIndex:201, position: 'relative'}}
         ></iframe>
       </div>
 
