@@ -37,4 +37,26 @@ export default function SubscribePage() {
 
       {!loading && offerings && offerings.current ? (
         <div>
-          <h3 style={{ marg
+          <h3 style={{ marginBottom: '0.5rem' }}>
+            Offering: {offerings.current.display_name || offerings.current.id}
+          </h3>
+          {offerings.current.packages?.map((pkg) => (
+            <div key={pkg.identifier} style={{
+              background: '#222',
+              padding: '1rem',
+              marginBottom: '1rem',
+              borderRadius: '8px'
+            }}>
+              <p><strong>{pkg.identifier}</strong></p>
+              <p>{pkg.product?.price_string || 'No price set'}</p>
+              {/* Optional: Add Buy button */}
+              {/* <button>Subscribe</button> */}
+            </div>
+          ))}
+        </div>
+      ) : (
+        !loading && <p>No offerings available</p>
+      )}
+    </section>
+  );
+}
