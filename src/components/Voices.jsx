@@ -16,30 +16,32 @@ export default function Voices() {
     fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': key }
     })
-    .then(res => {
-      console.log('Fetch status:', res.status)
-      return res.json()
-    })
-    .then(json => {
-      console.log('Got ElevenLabs voices:', json.voices)
-      setVoices(json.voices.slice(0, 20))
-    })
-    .catch(err => console.error('Fetch error:', err))
+      .then(res => {
+        console.log('Fetch status:', res.status)
+        return res.json()
+      })
+      .then(json => {
+        console.log('Got ElevenLabs voices:', json.voices)
+        // use voice_id, not id
+        setVoices(json.voices.slice(0, 20))
+      })
+      .catch(err => console.error('Fetch error:', err))
   }, [])
 
-  // whenever selectedVoiceId changes, update the <audio> and play
+  // whenever selectedVoiceId changes, update audio.src, load, and play
   useEffect(() => {
     if (!selectedVoiceId || !voices.length) return
 
-    const voice = voices.find(v => v.id === selectedVoiceId)
+    const voice = voices.find(v => v.voice_id === selectedVoiceId)
     if (!voice) {
-      console.warn('Selected voice not found in list:', selectedVoiceId)
+      console.warn('Selected voice not found:', selectedVoiceId)
       return
     }
 
-    console.log('Playing sample for voice:', voice.name, voice.id)
+    console.log('Playing sample for voice:', voice.name, voice.voice_id)
     if (audioRef.current) {
       audioRef.current.src = voice.sampleUrl
+      audioRef.current.load()                // ensure it picks up the new src
       audioRef.current
         .play()
         .catch(err => console.error('Audio play() failed:', err))
@@ -52,20 +54,21 @@ export default function Voices() {
         <h2>Pick a voice</h2>
         {voices.map(v => (
           <div
-            key={v.id}
+            key={v.voice_id}    // <-- use voice_id as the key
             onClick={() => {
-              console.log('Clicked voice:', v.id, v.name)
-              setVoice(v.id)
+              console.log('Clicked voice:', v.voice_id, v.name)
+              setVoice(v.voice_id)
             }}
             style={{
               ...styles.voiceItem,
-              fontWeight: v.id === selectedVoiceId ? 'bold' : 'normal'
+              fontWeight: v.voice_id === selectedVoiceId ? 'bold' : 'normal'
             }}
           >
             {v.name}
           </div>
         ))}
       </aside>
+
       <main style={styles.main}>
         <h2>Sample Player</h2>
         <audio
