@@ -44,7 +44,7 @@ export default function Voices() {
 
     // Build the sphere of text‐sprites
     const group  = new THREE.Group()
-    const R      = 4               // sphere radius
+    const R      = 3               // sphere radius
     const FONT_SIZE   = 12
     const FONT_FAMILY = 'Audiowide, Arial, sans-serif'
     const SPRITE_SCALE = 25         // tweak to enlarge/shrink labels
