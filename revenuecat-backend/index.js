@@ -1,17 +1,22 @@
-// index.js
-require('dotenv').config();
-const express = require('express');
-const { getOfferings } = require('./revenuecat');
+require("dotenv").config();
+const axios = require("axios");
+const express = require("express");
 
 const app = express();
 const PORT = 5000;
 
-app.get('/api/offerings', async (req, res) => {
+app.get("/api/offerings", async (req, res) => {
   try {
-    const offerings = await getOfferings();
-    res.json(offerings);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const response = await axios.get("https://api.revenuecat.com/v2/offerings", {
+      headers: {
+        Authorization: `Bearer ${process.env.REVENUECAT_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching offerings:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to fetch offerings" });
   }
 });
 
