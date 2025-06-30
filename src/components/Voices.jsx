@@ -105,7 +105,8 @@ export default function Voices() {
         } else {
           s.scale.set(1,1,1)
           audioMap.current[s.userData.voiceId]?.pause()
-          audioMap.current[s.userData.voiceId]!.currentTime = 0
+           const audio = audioMap.current[s.userData.voiceId]
+         if (audio) audio.currentTime = 0
         }
       })
 
